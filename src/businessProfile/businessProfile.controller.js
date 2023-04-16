@@ -11,8 +11,19 @@ exports.createBusinessProfile = async (req, res, next) => {
     }
 };
 exports.getAllBusinessProfile = async (req, res, next) => {
+    const { catg, keyword, limit } = req.query;
     try {
-        const businessProfile = await BusinessProfileModel.find();
+        const businessProfile = await BusinessProfileModel.find({
+            $and: [
+                { catg: { $in: [catg] } },
+                { keyWord: { $in: [keyword] } },
+                { status: "true" }
+            ],
+        }
+        )
+            .select('name address catg keyword site time rating totalReviews status')
+            .sort({ createdAt: -1 })
+            .limit(parseInt(limit) || 10);
         res.status(201).json(businessProfile)
     } catch (err) {
         next(err)
@@ -20,7 +31,9 @@ exports.getAllBusinessProfile = async (req, res, next) => {
 }
 exports.getBusinessProfileById = async (req, res, next) => {
     try {
-        const businessProfile = await BusinessProfileModel.findById(req.params.id).populate('reviews', 'title desc likeCount dislikeCount');
+        const businessProfile = await BusinessProfileModel.findById(req.params.id)
+        .select('name phone email address location catg keyword postBox establishIn site socailMedia openAllTime time days reviews rating totalReviews status')
+            .populate('reviews', 'title desc likeCount dislikeCount')
         if (!businessProfile) {
             return next(ERROR(404, 'Business profile not found'));
         }
@@ -52,7 +65,7 @@ exports.deleteBusinessProfileById = async (req, res, next) => {
         if (!businessProfile) {
             return next(ERROR(404, 'Business profile not found'));
         }
-        res.status(200).json({ message: 'Business profile deleted successfully' });
+        res.status(204).send();
     } catch (err) {
         next(err)
     }
