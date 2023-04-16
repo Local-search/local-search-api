@@ -7,7 +7,7 @@ advertiseRoutes.use(verifyJwt)
 advertiseRoutes.post('/', verifyUser, createAds)
 
 
-advertiseRoutes.patch('/:id', verifyUser, updateAd)
+advertiseRoutes.put('/:id', verifyUser,  updateAd)
 advertiseRoutes.delete('/:id', verifyUser, deleteAd)
 
 

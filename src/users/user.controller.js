@@ -52,10 +52,9 @@ const getUser = async (req, res, next) => {
     try {
         const user = await User.findById({ _id: id }).select("-password");
         if (!user) {
-            return next(ERROR(401, "User not found."));
+            return next(ERROR(401, "User not found."))
 
         }
-
         res.status(200).json({
             userInfo: user,
         });
@@ -64,15 +63,15 @@ const getUser = async (req, res, next) => {
     }
 };
 const deleteUser = async (req, res, next) => {
-    const { userId } = req.params
+    const { id } = req.params
 
 
     try {
-        const deletedUser = await User.findByIdAndDelete({ _id: userId });
+        const deletedUser = await User.findByIdAndDelete({ _id: id });
         if (!deletedUser) {
             return next(ERROR(400, "User not Found"));
         }
-        res.status(200).json({ message: `link ${userId} tokenid${req.id} Account is Deleted successfully` });
+        res.status(200).json({ message: `Account has been Deleted!` });
     } catch (err) {
         next(err);
     }

@@ -38,8 +38,8 @@ const verifyUser = (req, res, next) => {
 }
 const verifyIsSameUser = (req, res, next) => {
     verifyJwt(req, res, () => {
-
-        if (req.id === req.params.id || req.role === "ADMIN") {
+        const checkId = req.param.id || req.body.id
+        if (req.id === checkId && req.role === "USER" || req.role === "ADMIN") {
             next()
         }
         else {

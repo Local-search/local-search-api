@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const AdvertisementModel = require('../models/advertisement.model');
 const ERROR = require('../utils/Error');
 
@@ -35,12 +36,12 @@ const createAds = async (req, res, next) => {
     }
 };
 
-const getAllAds = async (req, res) => {
+const getAllAds = async (req, res, next) => {
     try {
         const advertisements = await AdvertisementModel.find({});
         res.send(advertisements);
-    } catch (error) {
-        res.status(500).send(error);
+    } catch (err) {
+        next(err)
     }
 };
 
@@ -75,35 +76,62 @@ const getAd = async (req, res, next) => {
     }
 };
 
-const updateAd = async (req, res) => {
+const updateAd = async (req, res, next) => {
+    const { id, role } = req;
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['title', 'desc', 'image', 'endDate', 'views', 'isActive', 'catg', 'keyWord', 'link',];
+    const allowedUpdates = ['title', 'desc', 'image', 'endDate', 'isActive', 'catg', 'keyWord', 'link',];
     const isValidOperation = updates.every(update => allowedUpdates.includes(update));
 
     if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' });
+        return next(ERROR(404, 'Invalid updates!'))
     }
 
     try {
-        const advertisement = await AdvertisementModel.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+        const advertisement = await AdvertisementModel.findById(req.params.id);
         if (!advertisement) {
-            return res.status(404).send();
+            return next(ERROR(404, "Ad not found"))
         }
-        res.send(advertisement);
-    } catch (error) {
-        res.status(400).send(error);
+        // console.log(advertisement.advertiser.toString())
+        // console.log(id)
+        // console.log(advertisement.advertiser.toString() === id)
+
+        if (advertisement.advertiser.toString() !== id) {
+            return next(ERROR(401, "Unauthorized"));
+        }
+        if (role === "ADMIN") {
+            advertisement.status = req.body.status
+        } else {
+            advertisement.status = "pending";
+        }
+        Object.assign(advertisement, req.body);
+        const updatedAdvertisement = await advertisement.save();
+        res.send(updatedAdvertisement);
+    } catch (err) {
+        next(err);
     }
 };
 
-const deleteAd = async (req, res) => {
+
+const deleteAd = async (req, res, next) => {
     try {
-        const advertisement = await AdvertisementModel.findByIdAndDelete(req.params.id);
+        const advertisement = await AdvertisementModel.findById(req.params.id);
         if (!advertisement) {
-            return res.status(404).send();
+            return next(ERROR(404, "Advertisement not found"));
         }
-        res.send(advertisement);
-    } catch (error) {
-        res.status(500).send(error);
+        if (advertisement.advertiser.toString() !== req.id) {
+            return next(ERROR(401, "Unauthorized"));
+        }
+
+        const deletedAdvertisement = await AdvertisementModel.findByIdAndDelete(
+            req.params.id,
+            { $and: [{ advertiser: req.id }] }
+        );
+        if (!deletedAdvertisement) {
+            return next(ERROR(404, "Advertisement not found"));
+        }
+        res.status(204).send();
+    } catch (err) {
+        next(err)
     }
 };
 
