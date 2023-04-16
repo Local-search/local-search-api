@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-const User = require("../models/user.models");
+const User = require("../models/user.model")
 const ERROR = require("../utils/Error")
 
 const createUser = async (req, res, next) => {

@@ -1,11 +1,9 @@
 const ERROR = require('../utils/Error')
-const User = require('../models/user.models')
+const User = require('../models/user.model')
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken")
 const { REFRESH_SEC, JWT_SEC } = require('../config/secrets')
-const clgMsg = (msg) => {
-    console.log(`something went wrong ${msg}`)
-}
+
 const register = async (req, res, next) => {
     const { fullName, email, password, phone } = req.body
 
@@ -83,7 +81,7 @@ const login = async (req, res, next) => {
                         role: userFound.role
                     },
                     JWT_SEC,
-                    { expiresIn: "1m", }
+                    { expiresIn: "10m", }
                 )
                 const refreshToken = jwt.sign(
                     {
@@ -91,7 +89,7 @@ const login = async (req, res, next) => {
                         role: userFound.role
                     },
                     REFRESH_SEC,
-                    { expiresIn: "2m" }
+                    { expiresIn: "15m" }
                 )
                 userFound.refreshToken = refreshToken;
                 const result = await userFound.save()

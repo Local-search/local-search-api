@@ -3,6 +3,7 @@ const errorHandler = (err, req, res, next) => {
     const message = err.message || "error"
     const stack = err.stack
     res.status(status).json({
+        success: false,
         status,
         errMsg: message,
         stack
