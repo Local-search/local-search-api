@@ -20,7 +20,7 @@ exports.getAllBusinessProfile = async (req, res, next) => {
 }
 exports.getBusinessProfileById = async (req, res, next) => {
     try {
-        const businessProfile = await BusinessProfileModel.findById(req.params.id);
+        const businessProfile = await BusinessProfileModel.findById(req.params.id).populate('reviews', 'title desc likeCount dislikeCount');
         if (!businessProfile) {
             return next(ERROR(404, 'Business profile not found'));
         }

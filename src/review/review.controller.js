@@ -28,7 +28,7 @@ const CreateReview = async (req, res, next) => {
         const reviews = await ReviewModel.find({ businessProfile: businessId }, 'rating');
         const totalReviews = reviews.length;
         const totalRatings = reviews.reduce((acc, review) => acc + review.rating, 0);
-        const avgRating = totalRatings / totalReviews;
+        const avgRating = (totalRatings / totalReviews).toFixed(1);
 
         await BusinessProfileModel.findByIdAndUpdate(businessId, {
             $set: { rating: avgRating, totalReviews: totalReviews },
@@ -43,83 +43,105 @@ const CreateReview = async (req, res, next) => {
 
 };
 const getAllReview = async (req, res, next) => {
+    const { businessId } = req.params
     try {
-        const reviews = await ReviewModel.find();
+        const reviews = await ReviewModel.find({ businessProfile: businessId });
         res.status(200).json({ status: "success", reviews })
     } catch (err) {
         next(err)
     }
 }
+
 const likeReview = async (req, res, next) => {
     const { reviewId } = req.params;
     const { id } = req;
 
     try {
-        const review = await ReviewModel.findById(reviewId).select(
-            "likes dislikes likeCount dislikeCount"
+        const review = await ReviewModel.findOne({ _id: reviewId }).select(
+            "likes dislikes likeCount dislikeCount user"
         );
 
         if (!review) {
             return next(ERROR(404, "Review not found"));
         }
-        if (id === review.user) {
+        // console.log(id === review.user.toString())
+        // console.log(id)
+        // console.log(review.user.toString())
+        if (id === review.user.toString()) {
             return next(ERROR(403, `You cannot add like to your own review`));
         }
+        let updateObj = {};
 
         if (review.likes.includes(id)) {
-            review.likes.pull(id);
-            review.likeCount -= 1;
-            res.status(200).json({ message: "remove disliked" });
-
+            updateObj = {
+                $pullAll: { likes: [id] },
+                $inc: { likeCount: -1 },
+            };
+            res.status(200).json({ message: "Like removed" });
         } else {
             if (review.dislikes.includes(id)) {
-                review.dislikes.pull(id);
-                review.dislikeCount -= 1;
+                updateObj = {
+                    $pullAll: { dislikes: [id] },
+                    $inc: { dislikeCount: -1 },
+                };
             }
-
-            review.likes.addToSet(id);
-            review.likeCount += 1;
-
+            updateObj = {
+                $addToSet: { likes: id },
+                $inc: { likeCount: 1 },
+            };
             res.status(200).json({ message: "Review liked" });
         }
-        await review.save();
+
+        await ReviewModel.findOneAndUpdate({ _id: reviewId }, updateObj);
     } catch (err) {
         next(err);
     }
 };
+
+
 
 const dislikeReview = async (req, res, next) => {
     const { reviewId } = req.params;
     const { id } = req;
 
     try {
-        const review = await ReviewModel.findById(reviewId).select(
-            "likes dislikes likeCount dislikeCount"
+        const review = await ReviewModel.findOne({ _id: reviewId }).select(
+            "likes dislikes likeCount dislikeCount user"
         );
 
         if (!review) {
             return next(ERROR(404, "Review not found"));
         }
-        if (id === review.user) {
-            return next(ERROR(403, `you cannot add dislike to your own review`));
+        if (id === review.user.toString()) {
+            return next(ERROR(403, `You cannot add dislike to your own review`));
         }
+        // console.log(id === review.user)
+        // console.log(id)
+        // console.log(review.user)
+
+        let updateObj = {};
 
         if (review.dislikes.includes(id)) {
-            review.dislikes.pull(id);
-            review.dislikeCount -= 1;
-            res.status(200).json({ message: "remove disliked" });
+            updateObj = {
+                $pullAll: { dislikes: [id] },
+                $inc: { dislikeCount: -1 },
+            };
+            res.status(200).json({ message: "Disike removed" });
         } else {
-
             if (review.likes.includes(id)) {
-                review.likes.pull(id);
-                review.likeCount -= 1;
+                updateObj = {
+                    $pullAll: { likes: [id] },
+                    $inc: { likeCount: -1 },
+                };
             }
-            review.dislikes.addToSet(id);
-            review.dislikeCount += 1;
+            updateObj = {
+                $addToSet: { dislikes: id },
+                $inc: { dislikeCount: 1 },
+            };
             res.status(200).json({ message: "Review disliked" });
         }
-        await review.save();
 
+        await ReviewModel.findOneAndUpdate({ _id: reviewId }, updateObj);
     } catch (error) {
         next(error);
     }

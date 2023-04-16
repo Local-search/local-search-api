@@ -63,14 +63,15 @@ const login = async (req, res, next) => {
         if (!userFound) {
             return next(ERROR(403, "Wrong Credentials!!!"))
         }
-        else if (userFound) {
+         if (userFound) {
             const matchPassword = await bcrypt.compare(
                 password,
                 userFound.password
             );
             if (!matchPassword) {
                 return next(ERROR(403, "Wrong Credentials!!!"))
-            } else if (matchPassword) {
+            }
+             if (matchPassword) {
 
                 const accessToken = jwt.sign(
                     {
@@ -102,6 +103,7 @@ const login = async (req, res, next) => {
                     .status(200)
                     .json({
                         message: `welcome Back ${name}`,
+                        id: result._id,
                         accessToken
                     })
             }

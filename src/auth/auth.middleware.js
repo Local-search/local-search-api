@@ -3,7 +3,7 @@ const { JWT_SEC } = require("../config/secrets");
 const ERROR = require("../utils/Error");
 
 const verifyJwt = (req, res, next) => {
-    const authTokenInHeader = req.headers.authorization 
+    const authTokenInHeader = req.headers.authorization
     if (!authTokenInHeader) {
         return next(ERROR(403, "header is empty"))
     }
@@ -27,7 +27,19 @@ const verifyJwt = (req, res, next) => {
 
 const verifyUser = (req, res, next) => {
     verifyJwt(req, res, () => {
+
         if (req.role === "USER" || req.role === "ADMIN") {
+            next()
+        }
+        else {
+            return next(ERROR(401, "You are not authorized to do this action!!"))
+        }
+    })
+}
+const verifyIsSameUser = (req, res, next) => {
+    verifyJwt(req, res, () => {
+
+        if (req.id === req.params.id || req.role === "ADMIN") {
             next()
         }
         else {
@@ -44,4 +56,4 @@ const verifyAdmin = (req, res, next) => {
         }
     })
 }
-module.exports = { verifyJwt, verifyUser, verifyAdmin }
+module.exports = { verifyJwt, verifyUser, verifyAdmin, verifyIsSameUser }
