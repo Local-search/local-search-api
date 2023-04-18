@@ -10,11 +10,12 @@ exports.createCategory = async (req, res, next) => {
         if (req.role === "ADMIN") {
             const category = new CategoryModel({ label, status });
             await category.save();
+            res.status(201).json({ category });
         } else {
             const category = new CategoryModel({ label });
             await category.save();
+            res.status(201).json({ category });
         }
-        res.status(201).json(category);
     } catch (error) {
         next(error);
     }

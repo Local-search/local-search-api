@@ -9,8 +9,10 @@ const categorySchema = new mongoose.Schema({
         type: String,
         enum: ['false', 'true'],
         default: 'false',
+        index: true
     },
 });
+categorySchema.index({ label: "text" })
 
 const CategoryModel = mongoose.model('Categorys', categorySchema);
 module.exports = CategoryModel

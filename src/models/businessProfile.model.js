@@ -7,7 +7,7 @@ const businessProfileSchema = new mongoose.Schema(
             required: true,
         },
         phone: {
-            type: Number,
+            type: String,
         },
         email: {
             type: String,
@@ -34,13 +34,13 @@ const businessProfileSchema = new mongoose.Schema(
         catg: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Category",
+                ref: "Categorys",
             },
         ],
         keyWord: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Keyword",
+                ref: "Keywords",
             },
         ],
         postBox: {
@@ -107,7 +107,7 @@ const businessProfileSchema = new mongoose.Schema(
         TermsAndConditions: {
             type: String,
             enum: ["agree", "disagree"],
-            require: "You should confirm that you agree to our Terms and Conditions."
+            required: "You should confirm that you agree to our Terms and Conditions."
         },
 
         reviews: [{
@@ -137,10 +137,20 @@ const businessProfileSchema = new mongoose.Schema(
         timestamps: true,
     }
 );
+businessProfileSchema.index({ name: "text" })
+businessProfileSchema.index({ phone: "text" })
+businessProfileSchema.index({ email: "text" })
+businessProfileSchema.index({ address: "text" })
+businessProfileSchema.index({
+    "province.name": "text",
+    "province.city": "text",
+    "province.tolOrMarga": "text"
+});
 
-const BusinessProfileModel = mongoose.model(
-    "BusinessProfile",
-    businessProfileSchema
-);
+
+businessProfileSchema.index({ catg: 1 });
+businessProfileSchema.index({ keyWord: 1 });
+
+const BusinessProfileModel = mongoose.model("BusinessProfile", businessProfileSchema);
 
 module.exports = BusinessProfileModel;

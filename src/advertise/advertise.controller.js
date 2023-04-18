@@ -44,6 +44,14 @@ const getAllAds = async (req, res, next) => {
         next(err)
     }
 };
+const getAdsById = async (req, res, next) => {
+    try {
+        const advertisements = await AdvertisementModel.findById(req.params.id);
+        res.send(advertisements);
+    } catch (err) {
+        next(err)
+    }
+};
 
 const getAd = async (req, res, next) => {
     try {
@@ -135,4 +143,4 @@ const deleteAd = async (req, res, next) => {
     }
 };
 
-module.exports = { createAds, getAllAds, getAd, updateAd, deleteAd };
+module.exports = { createAds, getAllAds, getAd, updateAd, deleteAd, getAdsById };

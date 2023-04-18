@@ -1,7 +1,7 @@
 const app = require('./src/config/express')
 const connectTomongodb = require('./src/config/mongodb')
 
-const PORT = 8080
+const PORT = 8081
 
 app.listen((PORT), () => {
     console.log(`Server Started
