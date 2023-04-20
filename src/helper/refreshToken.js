@@ -5,16 +5,16 @@ const ERROR = require("../utils/Error");
 
 const RefreshToken = async (req, res, next) => {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return next(ERROR(401, "cookies not avalible "))
+    if (!cookies?.jwt) return next(ERROR(404, "cookies not avalible "))
     const refreshToken = cookies.jwt
     try {
         const userFound = await userModel.findOne({ refreshToken });
-        if (!userFound) return next(ERROR(403, "token expired"));
+        if (!userFound) return next(ERROR(403, "invalid token"));
         if (userFound) {
 
             jwt.verify(refreshToken, REFRESH_SEC, (err, decoded) => {
                 if (err || userFound.username !== decoded.username)
-                    return next(ERROR(403, "invalid Token"))
+                    return next(ERROR(403, "Token expired"))
                 const accessToken = jwt.sign(
                     {
                         id: decoded._id,

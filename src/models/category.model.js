@@ -11,8 +11,13 @@ const categorySchema = new mongoose.Schema({
         default: 'false',
         index: true
     },
+    popular: {
+        type: Number,
+        default: 5
+    }
 });
 categorySchema.index({ label: "text" })
+categorySchema.index({ popular: 1 })
 
 const CategoryModel = mongoose.model('Categorys', categorySchema);
 module.exports = CategoryModel

@@ -1,4 +1,4 @@
-const { createAds, getAllAds, getAd, updateAd, deleteAd, getAdsById } = require('./advertise.controller');
+const { createAds, getAllAds, getAd, updateAd, deleteAd, getAdsById, revenue } = require('./advertise.controller');
 const { verifyJwt, verifyAdmin, verifyUser } = require('../auth/auth.middleware');
 const advertiseRoutes = require('express').Router()
 
@@ -13,6 +13,7 @@ advertiseRoutes.delete('/:id', verifyUser, deleteAd)
 advertiseRoutes.use(verifyAdmin)
 advertiseRoutes.get('/all', getAllAds)
 advertiseRoutes.get('/all', getAdsById)
+advertiseRoutes.get('/revenue', revenue)
 
 
 module.exports = advertiseRoutes;

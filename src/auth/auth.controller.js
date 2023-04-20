@@ -8,16 +8,16 @@ const register = async (req, res, next) => {
   const { fullName, email, password, phone } = req.body;
 
   if (!fullName) {
-    return next(ERROR(403, "enter your full name!!!"));
+    return next(ERROR(401, "enter your full name!!!"));
   }
   if (!email) {
-    return next(ERROR(403, "email is required!!!"));
+    return next(ERROR(401, "email is required!!!"));
   }
   if (!phone) {
-    return next(ERROR(403, "enter your Phone Number!!!"));
+    return next(ERROR(401, "enter your Phone Number!!!"));
   }
   if (!password) {
-    return next(ERROR(403, "enter strong password!!!"));
+    return next(ERROR(401, "enter strong password!!!"));
   }
   try {
     const userFound = await User.findOne({
@@ -48,20 +48,20 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email) {
-    return next(ERROR(403, "enter your email!!"));
+    return next(ERROR(401, "enter your email!!"));
   }
   if (!password) {
-    return next(ERROR(403, "enter your password!!"));
+    return next(ERROR(401, "enter your password!!"));
   }
   try {
     const userFound = await User.findOne({ email });
     if (!userFound) {
-      return next(ERROR(403, "Wrong Credentials!!!"));
+      return next(ERROR(401, "Wrong Credentials!!!"));
     }
     if (userFound) {
       const matchPassword = await bcrypt.compare(password, userFound.password);
       if (!matchPassword) {
-        return next(ERROR(403, "Wrong Credentials!!!"));
+        return next(ERROR(401, "Wrong Credentials!!!"));
       }
       if (matchPassword) {
         const accessToken = jwt.sign(
@@ -85,7 +85,7 @@ const login = async (req, res, next) => {
         );
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
-        const name = result.fullName;
+        const fullName = result.fullName;
 
         res
           .cookie("jwt", refreshToken, {
@@ -94,8 +94,8 @@ const login = async (req, res, next) => {
           })
           .status(200)
           .json({
-            message: `welcome Back ${name}`,
-            id: result._id,
+            message: `welcome Back ${fullName}`,
+            fullName,
             accessToken,
           });
       }
