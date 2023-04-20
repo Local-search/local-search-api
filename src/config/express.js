@@ -5,7 +5,7 @@ const routes = require('../../routes')
 const cookieParser = require('cookie-parser')
 const app = express()
 
-app.use(cors())
+app.use(cors({ origin: 'https://ngr-np-ideal-winner-j9vvvp5qj6j2jqq9-5173.preview.app.github.dev' }))
 app.use(express.json())
 app.use(cookieParser());
 app.use(routes)
