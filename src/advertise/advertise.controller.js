@@ -13,6 +13,7 @@ const createAds = async (req, res, next) => {
     catg,
     keyWord,
     adsType,
+    budget,
   } = req.body;
   try {
     const advertisement = new AdvertisementModel({
@@ -26,6 +27,7 @@ const createAds = async (req, res, next) => {
       catg,
       adsType,
       keyWord,
+      budget,
     });
     await advertisement.save();
     res.status(201).send(advertisement);
@@ -51,31 +53,62 @@ const getAdsById = async (req, res, next) => {
   }
 };
 
-const getAd = async (req, res, next) => {
+const getAd = async (
+  req,
+  res,
+  next,
+  ids,
+  search,
+  page,
+  limit,
+  categorys,
+  keywords,
+  autoFetch
+) => {
+  console.log(limit);
   try {
-    const { catg, keyword, limit } = req.query;
-
-    const ads = await AdvertisementModel.find({
-      $and: [
-        { catg: { $in: [catg] } },
-        { keyWord: { $in: [keyword] } },
-        { isActive: true },
-        { status: "approved" },
-      ],
-    })
-      .select("_id title desc image clicks link views createdAt")
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit) || 2);
-
-    if (ads.length === 0) {
-      return next(ERROR(404, "No ads found"));
+    // const { catg, keyword, limit } = req.query;
+    let limits = limit;
+    if (limit >= 10) {
+      limits = limit - 3;
     }
 
-    res.send(ads);
+    const query = {
+      $or: [
+        {
+          important: true,
+        },
+      ],
+      // $and: [{ status: "APPROVED" }],
+    };
+    if (categorys) {
+      query.$or.push({ catg: { $in: ids } });
+    }
+    if (keywords) {
+      query.$or.push({ keyWord: { $in: ids } });
+    }
+    if (search) {
+      query.$or.push({ $text: { $search: search } });
+    }
+    const ads = await AdvertisementModel.find(query)
+      .select("_id title desc image link createdAt important budget")
+      .sort({ inportant: false, score: { $meta: "textScore" } })
+      .skip((page - 1) * limits)
+      .limit(limits)
+      .select("title desc image");
+
+    // if (ads.length === 0) {
+    //   return next(ERROR(404, "No ads found"));
+    // }
+
     const promises = ads.map((ad) =>
       AdvertisementModel.findByIdAndUpdate(ad._id, { $inc: { views: 1 } })
     );
     await Promise.all(promises);
+    if (autoFetch) {
+      return { ads };
+    }
+    res.send(ads);
   } catch (err) {
     next(err);
   }
@@ -189,5 +222,5 @@ module.exports = {
   updateAd,
   deleteAd,
   getAdsById,
-  revenue
+  revenue,
 };
