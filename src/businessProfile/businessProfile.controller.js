@@ -1,3 +1,4 @@
+const { getAd } = require("../advertise/advertise.controller");
 const { verifyJwt } = require("../auth/auth.middleware");
 const BusinessProfileModel = require("../models/businessProfile.model");
 const CategoryModel = require("../models/category.model");
@@ -102,10 +103,21 @@ exports.getAllBusinessProfile = async (req, res, next) => {
       query.$or.push({ $text: { $search: search } });
     }
     //console.log(query);
+    const { ads } = await getAd(
+      req,
+      res,
+      next,
+      ids,
+      search,
+      page,
+      limit,
+      categorys,
+      keywords,
+      (autoFetch = true)
+    );
 
     const count = await BusinessProfileModel.countDocuments(query);
     const totalPages = Math.ceil(count / limit);
-
     const businessProfiles = await BusinessProfileModel.find(query)
       .populate({
         path: "catg",
@@ -116,7 +128,10 @@ exports.getAllBusinessProfile = async (req, res, next) => {
         select: "label",
       })
       .sort({
-        _id: -1,
+        // _id: -1,
+        popular: -1,
+        rating: -1,
+        totalReviews: -1,
         score: { $meta: "textScore" },
       })
       .skip((page - 1) * limit)
@@ -126,11 +141,12 @@ exports.getAllBusinessProfile = async (req, res, next) => {
       )
       .lean()
       .exec();
-
+    
     res.status(200).json({
       count,
       totalPages,
       currentPage: page,
+      ads: ads,
       businessProfiles,
     });
   } catch (err) {
