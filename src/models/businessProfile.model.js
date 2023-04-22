@@ -12,6 +12,7 @@ const businessProfileSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      required: true,
     },
     address: {
       type: String,
@@ -121,11 +122,11 @@ const businessProfileSchema = new mongoose.Schema(
     ],
     rating: {
       type: Number,
-      default: 0,
+      default: 2.5,
     },
     totalReviews: {
       type: Number,
-      default: 0,
+      default: 2,
     },
     status: {
       type: String,
@@ -144,22 +145,28 @@ const businessProfileSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-businessProfileSchema.index({ name: "text" });
-businessProfileSchema.index({ phone: "text" });
-businessProfileSchema.index({ email: "text" });
-businessProfileSchema.index({ address: "text" });
+businessProfileSchema.index({ name: "text" },{ partialFilterExpression: { status: true } },{ background: true });
+businessProfileSchema.index({ phone: "text" },{ partialFilterExpression: { status: true } },{ background: true });
+businessProfileSchema.index({ email: "text" },{ partialFilterExpression: { status: true } },{ background: true });
+businessProfileSchema.index({ address: "text" },{ partialFilterExpression: { status: true } },{ background: true });
 businessProfileSchema.index({
   "province.name": "text",
   "province.city": "text",
   "province.tolOrMarga": "text",
-});
-
-businessProfileSchema.index({ catg: 1 });
-businessProfileSchema.index({ keyWord: 1 });
-
-const BusinessProfileModel = mongoose.model(
-  "BusinessProfile",
-  businessProfileSchema
+},{ partialFilterExpression: { status: true } },{ background: true });
+businessProfileSchema.index(
+  { catg: 1, keyWord: 1, reviews: 1, status: 1, popular: -1 },{ partialFilterExpression: { status: true } },{ background: true }
 );
+businessProfileSchema.index(
+  { rating: -1, totalReviews: -1, status: 1 },
+  { partialFilterExpression: { status: true } },
+  { background: true }
+);
+businessProfileSchema.index(
+  { status: 1 },
+  { partialFilterExpression: { status: false } }
+);
+
+const BusinessProfileModel = mongoose.model("BusinessProfile",businessProfileSchema);
 
 module.exports = BusinessProfileModel;

@@ -1,23 +1,31 @@
 const mongoose = require("mongoose");
 
 const categorySchema = new mongoose.Schema({
-    label: {
-        type: String,
-        required: true
-    },
-    status: {
-        type: String,
-        enum: ['false', 'true'],
-        default: 'false',
-        index: true
-    },
-    popular: {
-        type: Number,
-        default: 5
-    }
+  label: {
+    type: String,
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["false", "true"],
+    default: "false",
+  },
+  popular: {
+    type: Number,
+    default: 5,
+  },
 });
-categorySchema.index({ label: "text" })
-categorySchema.index({ popular: 1 })
-
-const CategoryModel = mongoose.model('Categorys', categorySchema);
-module.exports = CategoryModel
+categorySchema.index(
+  { label: "text" },
+  { partialFilterExpression: { status: true } }
+);
+categorySchema.index(
+  { status: 1 },
+  { partialFilterExpression: { status: false } }
+);
+categorySchema.index(
+  { status: 1, popular: -1 },
+  { partialFilterExpression: { status: true } }
+);
+const CategoryModel = mongoose.model("Categorys", categorySchema);
+module.exports = CategoryModel;
