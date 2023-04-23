@@ -36,7 +36,7 @@ const AdvertisementSchema = new mongoose.Schema(
     ],
     important: {
       type: Boolean,
-      default: "true",
+      default: false,
       index: true,
     },
     adsType: {
