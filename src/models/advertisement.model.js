@@ -57,11 +57,11 @@ const AdvertisementSchema = new mongoose.Schema(
 );
 AdvertisementSchema.index(
   { title: "text" },
-  { partialFilterExpression: { status: "APPROVED" } }
+  // { partialFilterExpression: { status: "APPROVED" } }
 );
 AdvertisementSchema.index(
   { desc: "text" },
-  { partialFilterExpression: { status: "APPROVED" } }
+  // { partialFilterExpression: { status: "APPROVED" } }
 );
 AdvertisementSchema.index({ budget: -1 }, { background: true });
 AdvertisementSchema.index({ endDate: -1 }, { background: true });

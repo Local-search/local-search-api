@@ -92,7 +92,7 @@ const getAd = async (
     }
     const ads = await AdvertisementModel.find(query)
       .select("_id title desc image link createdAt important budget")
-      .sort({ inportant: false, score: { $meta: "textScore" } })
+      .sort({ score: { $meta: "textScore" } })
       .skip((page - 1) * limits)
       .limit(limits)
       .select("title desc image");
