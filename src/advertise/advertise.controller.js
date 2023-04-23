@@ -14,7 +14,11 @@ const createAds = async (req, res, next) => {
     keyWord,
     adsType,
     budget,
+<<<<<<< HEAD
     important,
+=======
+    important
+>>>>>>> c71771867e1d93b22977e923fbbac77b38d48bd5
   } = req.body;
   try {
     const advertisement = new AdvertisementModel({
