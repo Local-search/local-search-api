@@ -3,7 +3,9 @@ const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { REFRESH_SEC, JWT_SEC } = require("../config/secrets");
-
+const sendEMail = require("../helper/sendEmail");
+const TokenModel = require("../models/token");
+const crypto = require("crypto");
 const register = async (req, res, next) => {
   const { fullName, email, password, phone } = req.body;
 
@@ -57,6 +59,24 @@ const login = async (req, res, next) => {
     const userFound = await User.findOne({ email });
     if (!userFound) {
       return next(ERROR(401, "Wrong Credentials!!!"));
+    }
+    if (userFound.status === "false") {
+      const email = userFound.email;
+      const length = 6;
+      const verificationCode = crypto
+        .randomBytes(Math.ceil(length / 2))
+        .toString("hex")
+        .slice(0, length);
+
+      await sendEMail(next, verificationCode, email);
+      const saveToken = new TokenModel({
+        user: userFound._id,
+        token: verificationCode,
+      });
+      await saveToken.save();
+      return res
+        .status(201)
+        .json({ message: "A verification code has been sent to your email. Please check your inbox." });
     }
     if (userFound) {
       const matchPassword = await bcrypt.compare(password, userFound.password);
