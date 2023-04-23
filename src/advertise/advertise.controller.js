@@ -14,6 +14,7 @@ const createAds = async (req, res, next) => {
     keyWord,
     adsType,
     budget,
+    important
   } = req.body;
   try {
     const advertisement = new AdvertisementModel({
@@ -28,6 +29,7 @@ const createAds = async (req, res, next) => {
       adsType,
       keyWord,
       budget,
+      important,
     });
     await advertisement.save();
     res.status(201).send(advertisement);
