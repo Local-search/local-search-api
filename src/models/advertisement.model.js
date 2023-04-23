@@ -41,7 +41,7 @@ const AdvertisementSchema = new mongoose.Schema(
     },
     adsType: {
       type: String,
-      enum: ["DISPLAY", "SEARCH", "WORD"],
+      enum: ["DISPLAY", "SEARCH", "TEXT"],
       required: true,
     },
     link: { type: String },
@@ -55,16 +55,10 @@ const AdvertisementSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-AdvertisementSchema.index(
-  { title: "text" },
-  // { partialFilterExpression: { status: "APPROVED" } }
-);
-AdvertisementSchema.index(
-  { desc: "text" },
-  // { partialFilterExpression: { status: "APPROVED" } }
-);
+AdvertisementSchema.index({ title: "text" });
+AdvertisementSchema.index({ desc: "text" });
 AdvertisementSchema.index({ budget: -1 }, { background: true });
-AdvertisementSchema.index({ endDate: -1 }, { background: true });
+AdvertisementSchema.index({ endDate: 1 }, { expireAfterSeconds: 0 });
 AdvertisementSchema.index({ status: 1 }, { background: true });
 AdvertisementSchema.index({ adsType: 1 }, { background: true });
 AdvertisementSchema.index({ businessProfile: 1 }, { background: true });
@@ -92,7 +86,7 @@ AdvertisementSchema.index(
 );
 AdvertisementSchema.index(
   { adsType: 1 },
-  { partialFilterExpression: { adsType: "WORD" } },
+  { partialFilterExpression: { adsType: "TEXT" } },
   { background: true }
 );
 
