@@ -1,8 +1,8 @@
-const authRoutes = require('express').Router()
-const { login, register } = require('./auth.controller')
+const authRoutes = require("express").Router();
+const { login, register, verifyOtp } = require("./auth.controller");
 
+authRoutes.post("/login", login);
+authRoutes.post("/register", register);
+authRoutes.post("/verify-otp", verifyOtp);
 
-authRoutes.post('/login', login)
-authRoutes.post('/register', register)
-
-module.exports = authRoutes
+module.exports = authRoutes;

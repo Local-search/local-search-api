@@ -7,7 +7,7 @@ const AdvertisementSchema = new mongoose.Schema(
     image: { type: String, required: true },
     advertiser: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Users",
       required: true,
     },
     businessProfile: {

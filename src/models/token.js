@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const TokenSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "Users",
     require: true,
     // unique: "A verification code has already been sent to this email address!",
     validate: {

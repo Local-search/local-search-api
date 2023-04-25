@@ -12,11 +12,17 @@ exports.createBusinessProfile = async (req, res, next) => {
     reviews,
     totalReviews,
     businessInfoUpdateAt,
+    formFillerInfo,
     ...otherData
   } = req.body;
   try {
     const businessProfile = new BusinessProfileModel({
       ...otherData,
+      formFillerInfo: {
+        userId: req.id,
+        role: req.body.formFillerInfo.role,
+        message: req.body.formFillerInfo.message,
+      },
     });
     await businessProfile.save();
     res.status(201).json(businessProfile);
@@ -141,7 +147,7 @@ exports.getAllBusinessProfile = async (req, res, next) => {
       )
       .lean()
       .exec();
-    
+
     res.status(200).json({
       count,
       totalPages,
@@ -154,15 +160,15 @@ exports.getAllBusinessProfile = async (req, res, next) => {
   }
 };
 
+
+
+
+
 exports.getBusinessProfileById = async (req, res, next) => {
   try {
     const businessProfile = await BusinessProfileModel.findOne({
       _id: req.params.id,
-      $and: [
-        {
-          status: "true",
-        },
-      ],
+      status: "true",
     })
 
       .select(
@@ -198,7 +204,10 @@ exports.updateBusinessProfileById = async (req, res, next) => {
   } = req.body;
   try {
     const businessProfile = await BusinessProfileModel.findByIdAndUpdate(
-      req.params.id,
+      {
+        _id: req.params.id,
+        "formFillerInfo.userId": req.id,
+      },
       {
         $set: [
           ...otherData,
@@ -218,12 +227,17 @@ exports.updateBusinessProfileById = async (req, res, next) => {
 };
 
 exports.deleteBusinessProfileById = async (req, res, next) => {
+  const { id } = req.body;
+  if (!id) {
+    return next(ERROR(400, "user id not found"));
+  }
   try {
-    const businessProfile = await BusinessProfileModel.findByIdAndDelete(
-      req.params.id
-    );
+    const businessProfile = await BusinessProfileModel.findOneAndDelete({
+      _id: req.params.id,
+      "formFillerInfo.userId": req.id,
+    });
     if (!businessProfile) {
-      return next(ERROR(404, "Business profile not found"));
+      return next(ERROR(401, "you are not authorized to do that"));
     }
     res.status(204).send();
   } catch (err) {
