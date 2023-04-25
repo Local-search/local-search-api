@@ -9,13 +9,15 @@ const {
   getUser,
   createUser,
   deleteUser,
+  updateUser,
 } = require("./user.controller");
 
 const userRoutes = require("express").Router();
 
 userRoutes.use(verifyJwt);
-userRoutes.get("/:id", verifyUser, verifyIsSameUser, getUser);
-userRoutes.delete("/:id", verifyUser, verifyIsSameUser, deleteUser);
+userRoutes.get("/:id", verifyIsSameUser, getUser);
+userRoutes.delete("/:id", verifyIsSameUser, deleteUser);
+userRoutes.put("/", verifyIsSameUser, updateUser);
 userRoutes.use(verifyAdmin);
 userRoutes.get("/", getUsers);
 userRoutes.post("/", createUser);

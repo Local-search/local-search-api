@@ -35,7 +35,7 @@ const createUser = async (req, res, next) => {
 
 const getUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find().select("-password").lean();
     res.status(200).json(users);
   } catch (err) {
     next(err);
@@ -45,13 +45,29 @@ const getUsers = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   const id = req.id;
   try {
-    const user = await User.findById({ _id: id }).select("-password");
+    const user = await User.findById({ _id: id }).select("-password").lean();
     if (!user) {
       return next(ERROR(401, "User not found."));
     }
     res.status(200).json({
       userInfo: user,
     });
+  } catch (err) {
+    next(err);
+  }
+};
+const updateUser = async (req, res, next) => {
+  const { password } = req.body;
+  try {
+    const updateUser = await User.findByIdAndUpdate(
+      req.id,
+      {
+        $set: [{ password: password }],
+      },
+      { new: true }
+    ).select("fullName email phone status");
+
+    res.status(201).json({ updateUser });
   } catch (err) {
     next(err);
   }
@@ -69,4 +85,4 @@ const deleteUser = async (req, res, next) => {
     next(err);
   }
 };
-module.exports = { createUser, getUsers, getUser, deleteUser };
+module.exports = { createUser, getUsers, getUser, deleteUser,updateUser };
