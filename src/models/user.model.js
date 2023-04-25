@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       required: "email is required",
+      unique: true
     },
     phone: {
       type: Number,
@@ -40,4 +41,6 @@ UserSchema.index(
   { status: 1 },
   { partialFilterExpression: { status: "true" } }
 );
-module.exports = mongoose.model("User", UserSchema);
+const User = mongoose.model("Users", UserSchema);
+
+module.exports = User;
