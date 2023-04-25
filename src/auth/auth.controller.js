@@ -10,16 +10,16 @@ const register = async (req, res, next) => {
   const { fullName, email, password, phone } = req.body;
 
   if (!fullName) {
-    return next(ERROR(401, "enter your full name!!!"));
+    return next(ERROR(400, "enter your full name!!!"));
   }
   if (!email) {
-    return next(ERROR(401, "email is required!!!"));
+    return next(ERROR(400, "email is required!!!"));
   }
   if (!phone) {
-    return next(ERROR(401, "enter your Phone Number!!!"));
+    return next(ERROR(400, "enter your Phone Number!!!"));
   }
   if (!password) {
-    return next(ERROR(401, "enter strong password!!!"));
+    return next(ERROR(400, "enter strong password!!!"));
   }
   try {
     const userFound = await User.findOne({
@@ -50,15 +50,15 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email) {
-    return next(ERROR(401, "enter your email!!"));
+    return next(ERROR(400, "enter your email!!"));
   }
   if (!password) {
-    return next(ERROR(401, "enter your password!!"));
+    return next(ERROR(400, "enter your password!!"));
   }
   try {
     const userFound = await User.findOne({ email });
     if (!userFound) {
-      return next(ERROR(401, "Wrong Credentials!!!"));
+      return next(ERROR(400, "Wrong Credentials!!!"));
     }
     if (userFound.status === "false") {
       const email = userFound.email;
@@ -74,9 +74,11 @@ const login = async (req, res, next) => {
         token: verificationCode,
       });
       await saveToken.save();
-      return res
-        .status(201)
-        .json({ message: "A verification code has been sent to your email. Please check your inbox." });
+      return res.status(201).json({
+        message:
+          "A verification code has been sent to your email. Please check your inbox.",
+        id: userFound._id,
+      });
     }
     if (userFound) {
       const matchPassword = await bcrypt.compare(password, userFound.password);
@@ -93,7 +95,7 @@ const login = async (req, res, next) => {
             role: userFound.role,
           },
           JWT_SEC,
-          { expiresIn: "10h" }
+          { expiresIn: "1h" }
         );
         const refreshToken = jwt.sign(
           {
@@ -101,7 +103,7 @@ const login = async (req, res, next) => {
             role: userFound.role,
           },
           REFRESH_SEC,
-          { expiresIn: "15m" }
+          { expiresIn: "2m" }
         );
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
@@ -124,5 +126,21 @@ const login = async (req, res, next) => {
     next(err);
   }
 };
-
-module.exports = { register, login };
+const verifyOtp = async (req, res, next) => {
+  const { id, otp } = req.body;
+  if (!id) return next(ERROR(400, "id not found!"));
+  if (!otp) return next(ERROR(400, "enter you verification code!"));
+  try {
+    const isUserIdFound = await TokenModel.findOne({ user: id });
+    console.log(isUserIdFound);
+    if (!isUserIdFound) return next(ERROR(404, "user not found"));
+    if (isUserIdFound.token !== otp) return next(Error(409));
+    if (isUserIdFound.token === otp) {
+      await User.findByIdAndUpdate(id, { status: "true" });
+    }
+    res.status(200).json({ message: "Account Verifyed successfully!" });
+  } catch (err) {
+    next(err);
+  }
+};
+module.exports = { register, login, verifyOtp };
