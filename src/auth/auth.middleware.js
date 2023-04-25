@@ -19,7 +19,11 @@ const verifyJwt = (req, res, next) => {
     req.role = decoded.role;
     next();
   } catch (err) {
-    next(ERROR(403, "token expired!!"));
+    if (err.name === "TokenExpiredError") {
+      next(ERROR(403, "token expired!!"));
+    } else {
+      next(ERROR(401, "Invalid token!!"));
+    }
   }
 };
 
