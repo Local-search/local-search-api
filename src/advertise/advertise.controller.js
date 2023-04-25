@@ -172,10 +172,10 @@ const deleteAd = async (req, res, next) => {
       return next(ERROR(401, "Unauthorized"));
     }
 
-    const deletedAdvertisement = await AdvertisementModel.findByIdAndDelete(
-      req.params.id,
-      { $and: [{ advertiser: req.id }] }
-    );
+    const deletedAdvertisement = await AdvertisementModel.findByIdAndDelete({
+      _id: req.params.id,
+      advertiser: req.id,
+    });
     if (!deletedAdvertisement) {
       return next(ERROR(404, "Advertisement not found"));
     }
