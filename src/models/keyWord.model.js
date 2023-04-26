@@ -17,15 +17,15 @@ const keywordSchema = new mongoose.Schema({
 });
 keywordSchema.index(
   { label: "text" },
-  { partialFilterExpression: { status: true } }
+  { partialFilterExpression: { status: "true" } }
 );
 keywordSchema.index(
   { status: 1 },
-  { partialFilterExpression: { status: false } }
+  { partialFilterExpression: { status: "false" } }
 );
 keywordSchema.index(
   { status: 1, popular: -1 },
-  { partialFilterExpression: { status: true } }
+  { partialFilterExpression: { status: "true" } }
 );
 const KeywordModel = mongoose.model("Keywords", keywordSchema);
 module.exports = KeywordModel;

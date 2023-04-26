@@ -77,11 +77,13 @@ exports.deleteKeyword = async (req, res, next) => {
     next(error);
   }
 };
-exports.mostPopularKeyword = async (req,res,next)=>{
-	try{
-		const getKeywords = await KeywordModel.find().sort({popular: -1}).limit(24)
-		res.status(200).json(getKeywords)
-	}catch (err){
-	next(err)
-	}
-}
+exports.mostPopularKeyword = async (req, res, next) => {
+  try {
+    const getKeywords = await KeywordModel.find({ status: "true" })
+      .sort({ popular: -1 })
+      .limit(24);
+    res.status(200).json(getKeywords);
+  } catch (err) {
+    next(err);
+  }
+};

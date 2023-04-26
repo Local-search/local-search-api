@@ -17,15 +17,15 @@ const categorySchema = new mongoose.Schema({
 });
 categorySchema.index(
   { label: "text" },
-  { partialFilterExpression: { status: true } }
+  { partialFilterExpression: { status: "true" } }
 );
 categorySchema.index(
   { status: 1 },
-  { partialFilterExpression: { status: false } }
+  { partialFilterExpression: { status: "false" } }
 );
 categorySchema.index(
   { status: 1, popular: -1 },
-  { partialFilterExpression: { status: true } }
+  { partialFilterExpression: { status: "true" } }
 );
 const CategoryModel = mongoose.model("Categorys", categorySchema);
 module.exports = CategoryModel;

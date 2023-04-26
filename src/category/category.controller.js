@@ -77,11 +77,15 @@ exports.deleteCategory = async (req, res, next) => {
     next(error);
   }
 };
-exports.mostPopularCatg = async (req,res,next)=>{
-	try{
-		const getCatg = await CategoryModel.find().sort({popular: -1}).limit(4)
-		res.status(200).json(getCatg)
-	}catch (err){
-	next(err)
-	}
-}
+exports.mostPopularCatg = async (req, res, next) => {
+  try {
+    const getCatg = await CategoryModel.find({ status: "true" })
+      .sort({ popular: -1 })
+      .limit(4);
+    res.status(200).json(getCatg);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
