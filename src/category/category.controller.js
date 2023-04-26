@@ -79,7 +79,7 @@ exports.deleteCategory = async (req, res, next) => {
 };
 exports.mostPopularCatg = async (req,res,next)=>{
 	try{
-		const getCatg = await CategoryModel.find().sort(popular -1).limit(4)
+		const getCatg = await CategoryModel.find().sort({popular: -1}).limit(4)
 		res.status(200).json(getCatg)
 	}catch (err){
 	next(err)
