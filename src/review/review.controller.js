@@ -31,7 +31,7 @@ const CreateReview = async (req, res, next) => {
       title,
       desc,
     };
-    const options = { upsert: true, new: true };
+    const options = { upsert: true, new: true, runValidators: true };
 
     const result = await ReviewModel.findOneAndUpdate(filter, update, options);
     if (!result) {
