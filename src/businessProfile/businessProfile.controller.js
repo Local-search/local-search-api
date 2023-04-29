@@ -172,7 +172,7 @@ const getAllBusinessProfile = async (req, res, next) => {
     //console.log(query);
 
 
-    const { businessProfiles, count, totalPages, ads } = searchBusiness(query, req, res,next)
+    const { businessProfiles, count, totalPages, ads, page } = searchBusiness(query, req, res,next)
     // const count = await BusinessProfileModel.countDocuments(query);
     // const totalPages = Math.ceil(count / limit);
     // const businessProfiles = await BusinessProfileModel.find(query)
