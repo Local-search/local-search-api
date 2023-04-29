@@ -247,7 +247,7 @@ exports.deleteBusinessProfileById = async (req, res, next) => {
 exports.trendingBusiness = async (req, res, next) => {
   try {
     const businesses = await BusinessProfile.find({ status: "true" })
-      .sort({ popular: -1 })
+      // .sort({ popular: -1 })
       .limit(4);
     res.status(200).json(businesses);
   } catch (err) {
