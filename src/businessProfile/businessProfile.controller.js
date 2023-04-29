@@ -31,7 +31,7 @@ const createBusinessProfile = async (req, res, next) => {
   }
 };
 
-const searchBusiness = async (query, ids, req, res, next) => {
+const searchBusiness = async (query, ids, search, req, res, next) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 10;
   // console.log('1', limit)
@@ -88,7 +88,7 @@ const searchBusiness = async (query, ids, req, res, next) => {
       keywords,
       (autoFetch = true)
     );
-    res.send({businessProfiles, count, totalPages, ads, page});
+    res.send({ businessProfiles, count, totalPages, ads, page });
   } catch (err) {
     next(err);
   }
@@ -175,7 +175,8 @@ const getAllBusinessProfile = async (req, res, next) => {
     //console.log(query);
 
 
-    const { businessProfiles, count, totalPages, ads, page } = await searchBusiness(query, ids, req, res, next)
+    const { businessProfiles, count, totalPages, ads, page } = await searchBusiness(query, ids, search, categorys,
+      keywords, req, res, next)
     // const count = await BusinessProfileModel.countDocuments(query);
     // const totalPages = Math.ceil(count / limit);
     // const businessProfiles = await BusinessProfileModel.find(query)
