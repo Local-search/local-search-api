@@ -14,15 +14,29 @@ const CreateReview = async (req, res, next) => {
       return next(ERROR(404, "Business profile not found"));
     }
 
-    const review = new ReviewModel({
+    // const review = new ReviewModel({
+    //   businessProfile: businessId,
+    //   user: id,
+    //   rating,
+    //   title,
+    //   desc,
+    // });
+
+    // const result = await review.save();
+    const filter = { businessProfile: businessId, user: id };
+    const update = {
       businessProfile: businessId,
       user: id,
       rating,
       title,
       desc,
-    });
+    };
+    const options = { upsert: true, new: true };
 
-    const result = await review.save();
+    const result = await ReviewModel.findOneAndUpdate(filter, update, options);
+    if (!result) {
+      return next(ERROR(401, "sothing went wrong"))
+    }
 
     const reviews = await ReviewModel.find(
       { businessProfile: businessId },
