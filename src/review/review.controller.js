@@ -28,7 +28,6 @@ const CreateReview = async (req, res, next) => {
       { businessProfile: businessId },
       "rating"
     );
-    console.log(review)
     const totalReviews = reviews.length;
     const totalRatings = reviews.reduce(
       (acc, review) => acc + review.rating,
@@ -45,7 +44,7 @@ const CreateReview = async (req, res, next) => {
       { new: true }
     );
 
-    res.status(200).json({ message: "Review added successfully" });
+    res.status(200).json({ review, message: "Review added successfully" });
   } catch (error) {
     next(error);
   }
