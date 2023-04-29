@@ -28,6 +28,7 @@ const CreateReview = async (req, res, next) => {
       { businessProfile: businessId },
       "rating"
     );
+    console.log(review)
     const totalReviews = reviews.length;
     const totalRatings = reviews.reduce(
       (acc, review) => acc + review.rating,
