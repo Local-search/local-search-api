@@ -30,9 +30,9 @@ const createBusinessProfile = async (req, res, next) => {
     next(err);
   }
 };
-const getAllBusinessProfile = async (req, res, next) => {
-  const { search } = req.query;
-  const page = parseInt(req.query.page) || 1;
+
+const searchBusiness = async (query, req) => {
+  let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 10;
   // console.log('1', limit)
 
@@ -48,6 +48,55 @@ const getAllBusinessProfile = async (req, res, next) => {
       // console.log(req.role !== "ADMIN")
     });
   }
+
+  const count = await BusinessProfileModel.countDocuments(query);
+  const totalPages = Math.ceil(count / limit);
+  if (page > totalPages) {
+    page = 1
+  }
+  const businessProfiles = await BusinessProfileModel.find(query)
+    .populate({
+      path: "catg",
+      select: "label",
+    })
+    .populate({
+      path: "keyWord",
+      select: "label",
+    })
+    .sort({
+      rating: -1,
+      totalReviews: -1,
+      popular: -1,
+      score: { $meta: "textScore" },
+    })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .select(
+      "name address catg keyWord site time rating totalReviews status popular"
+    )
+    .lean()
+    .exec();
+  return { businessProfiles, count, totalPages }
+}
+
+const getAllBusinessProfile = async (req, res, next) => {
+  const { search } = req.query;
+  // const page = parseInt(req.query.page) || 1;
+  // let limit = parseInt(req.query.limit) || 10;
+  // // console.log('1', limit)
+
+  // if (isNaN(page) || isNaN(limit)) {
+  //   return next(ERROR(400, "Invalid page or limit value"));
+  // }
+
+  // if (limit >= 25) {
+  //   verifyJwt(req, res, () => {
+  //     if (req?.role !== "ADMIN") {
+  //       limit = 25;
+  //     }
+  //     // console.log(req.role !== "ADMIN")
+  //   });
+  // }
 
   // console.log('2', limit)
   if (!search)
@@ -122,30 +171,31 @@ const getAllBusinessProfile = async (req, res, next) => {
       (autoFetch = true)
     );
 
-    const count = await BusinessProfileModel.countDocuments(query);
-    const totalPages = Math.ceil(count / limit);
-    const businessProfiles = await BusinessProfileModel.find(query)
-      .populate({
-        path: "catg",
-        select: "label",
-      })
-      .populate({
-        path: "keyWord",
-        select: "label",
-      })
-      .sort({
-        rating: -1,
-        totalReviews: -1,
-        popular: -1,
-        score: { $meta: "textScore" },
-      })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .select(
-        "name address catg keyWord site time rating totalReviews status popular"
-      )
-      .lean()
-      .exec();
+    const { businessProfiles, count, totalPages } = searchBusiness(query, req)
+    // const count = await BusinessProfileModel.countDocuments(query);
+    // const totalPages = Math.ceil(count / limit);
+    // const businessProfiles = await BusinessProfileModel.find(query)
+    //   .populate({
+    //     path: "catg",
+    //     select: "label",
+    //   })
+    //   .populate({
+    //     path: "keyWord",
+    //     select: "label",
+    //   })
+    //   .sort({
+    //     rating: -1,
+    //     totalReviews: -1,
+    //     popular: -1,
+    //     score: { $meta: "textScore" },
+    //   })
+    //   .skip((page - 1) * limit)
+    //   .limit(limit)
+    //   .select(
+    //     "name address catg keyWord site time rating totalReviews status popular"
+    //   )
+    //   .lean()
+    //   .exec();
 
     res.status(200).json({
       count,
