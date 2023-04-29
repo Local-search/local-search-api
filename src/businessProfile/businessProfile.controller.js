@@ -31,8 +31,7 @@ const createBusinessProfile = async (req, res, next) => {
   }
 };
 
-const searchBusiness = async (query, ids, search, categorys,
-  keywords, req, res, next) => {
+const searchBusiness = async (query, ids, search, categorys, keywords, req, res, next) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 10;
   // console.log('1', limit)
