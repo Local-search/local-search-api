@@ -88,7 +88,7 @@ const searchBusiness = async (query, req) => {
     keywords,
     (autoFetch = true)
   );
-  return { businessProfiles, count, totalPages, ads }
+  return { businessProfiles, count, totalPages, ads, page }
 }
 
 const getAllBusinessProfile = async (req, res, next) => {
