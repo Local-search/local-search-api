@@ -230,6 +230,9 @@ businessProfileSchema.index(
   { background: true }
 );
 businessProfileSchema.index(
+  {popular : -1},
+)
+businessProfileSchema.index(
   { status: 1 },
   { partialFilterExpression: { status: false } }
 );
