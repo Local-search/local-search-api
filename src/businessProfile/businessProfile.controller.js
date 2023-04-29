@@ -88,7 +88,7 @@ const searchBusiness = async (query, ids, search, categorys, keywords, req, res,
       keywords,
       (autoFetch = true)
     );
-    res.send(businessProfiles, count, totalPages, ads, page);
+    res.send({ businessProfiles, count, totalPages, ads, page });
   } catch (err) {
     next(err);
   }
