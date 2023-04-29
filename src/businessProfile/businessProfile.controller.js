@@ -76,7 +76,19 @@ const searchBusiness = async (query, req) => {
     )
     .lean()
     .exec();
-  return { businessProfiles, count, totalPages }
+  const { ads } = await getAd(
+    req,
+    res,
+    next,
+    ids,
+    search,
+    page,
+    limit,
+    categorys,
+    keywords,
+    (autoFetch = true)
+  );
+  return { businessProfiles, count, totalPages, ads }
 }
 
 const getAllBusinessProfile = async (req, res, next) => {
@@ -158,20 +170,9 @@ const getAllBusinessProfile = async (req, res, next) => {
       query.$or.push({ $text: { $search: search } });
     }
     //console.log(query);
-    const { ads } = await getAd(
-      req,
-      res,
-      next,
-      ids,
-      search,
-      page,
-      limit,
-      categorys,
-      keywords,
-      (autoFetch = true)
-    );
 
-    const { businessProfiles, count, totalPages } = searchBusiness(query, req)
+
+    const { businessProfiles, count, totalPages, ads } = searchBusiness(query, req)
     // const count = await BusinessProfileModel.countDocuments(query);
     // const totalPages = Math.ceil(count / limit);
     // const businessProfiles = await BusinessProfileModel.find(query)
