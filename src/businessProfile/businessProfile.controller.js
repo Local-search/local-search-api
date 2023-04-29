@@ -5,7 +5,7 @@ const CategoryModel = require("../models/category.model");
 const KeywordModel = require("../models/keyWord.model");
 const ERROR = require("../utils/Error");
 
-exports.createBusinessProfile = async (req, res, next) => {
+const createBusinessProfile = async (req, res, next) => {
   const {
     status,
     rating,
@@ -30,7 +30,7 @@ exports.createBusinessProfile = async (req, res, next) => {
     next(err);
   }
 };
-exports.getAllBusinessProfile = async (req, res, next) => {
+const getAllBusinessProfile = async (req, res, next) => {
   const { search } = req.query;
   const page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 10;
@@ -134,10 +134,9 @@ exports.getAllBusinessProfile = async (req, res, next) => {
         select: "label",
       })
       .sort({
-        // _id: -1,
-        popular: -1,
         rating: -1,
         totalReviews: -1,
+        popular: -1,
         score: { $meta: "textScore" },
       })
       .skip((page - 1) * limit)
@@ -160,11 +159,7 @@ exports.getAllBusinessProfile = async (req, res, next) => {
   }
 };
 
-
-
-
-
-exports.getBusinessProfileById = async (req, res, next) => {
+const getBusinessProfileById = async (req, res, next) => {
   try {
     const businessProfile = await BusinessProfileModel.findOne({
       _id: req.params.id,
@@ -193,7 +188,7 @@ exports.getBusinessProfileById = async (req, res, next) => {
   }
 };
 
-exports.updateBusinessProfileById = async (req, res, next) => {
+const updateBusinessProfileById = async (req, res, next) => {
   const {
     status,
     rating,
@@ -226,7 +221,7 @@ exports.updateBusinessProfileById = async (req, res, next) => {
   }
 };
 
-exports.deleteBusinessProfileById = async (req, res, next) => {
+const deleteBusinessProfileById = async (req, res, next) => {
   const { id } = req.body;
   if (!id) {
     return next(ERROR(400, "user id not found"));
@@ -244,13 +239,21 @@ exports.deleteBusinessProfileById = async (req, res, next) => {
     next(err);
   }
 };
-exports.trendingBusiness = async (req, res, next) => {
+const TrendingBusiness = async (req, res, next) => {
   try {
-    const businesses = await BusinessProfileModel.find({ status: "true" })
+    const business = await BusinessProfileModel.find({ status: "true" })
       .sort({ popular: -1 })
       .limit(4);
-    res.status(200).json(businesses);
+    res.status(200).json({ business });
   } catch (err) {
     next(err);
   }
+};
+module.exports = {
+  createBusinessProfile,
+  getBusinessProfileById,
+  getAllBusinessProfile,
+  updateBusinessProfileById,
+  deleteBusinessProfileById,
+  TrendingBusiness,
 };
