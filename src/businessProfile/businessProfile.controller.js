@@ -48,47 +48,50 @@ const searchBusiness = async (query, req, res, next) => {
       // console.log(req.role !== "ADMIN")
     });
   }
-
-  const count = await BusinessProfileModel.countDocuments(query);
-  const totalPages = Math.ceil(count / limit);
-  if (page > totalPages) {
-    page = 1
+  try {
+    const count = await BusinessProfileModel.countDocuments(query);
+    const totalPages = Math.ceil(count / limit);
+    if (page > totalPages) {
+      page = 1
+    }
+    const businessProfiles = await BusinessProfileModel.find(query)
+      .populate({
+        path: "catg",
+        select: "label",
+      })
+      .populate({
+        path: "keyWord",
+        select: "label",
+      })
+      .sort({
+        rating: -1,
+        totalReviews: -1,
+        popular: -1,
+        score: { $meta: "textScore" },
+      })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .select(
+        "name address catg keyWord site time rating totalReviews status popular"
+      )
+      .lean()
+      .exec();
+    const { ads } = await getAd(
+      req,
+      res,
+      next,
+      ids,
+      search,
+      page,
+      limit,
+      categorys,
+      keywords,
+      (autoFetch = true)
+    );
+    res.send({businessProfiles, count, totalPages, ads, page});
+  } catch (err) {
+    next(err);
   }
-  const businessProfiles = await BusinessProfileModel.find(query)
-    .populate({
-      path: "catg",
-      select: "label",
-    })
-    .populate({
-      path: "keyWord",
-      select: "label",
-    })
-    .sort({
-      rating: -1,
-      totalReviews: -1,
-      popular: -1,
-      score: { $meta: "textScore" },
-    })
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .select(
-      "name address catg keyWord site time rating totalReviews status popular"
-    )
-    .lean()
-    .exec();
-  const { ads } = await getAd(
-    req,
-    res,
-    next,
-    ids,
-    search,
-    page,
-    limit,
-    categorys,
-    keywords,
-    (autoFetch = true)
-  );
-  return { businessProfiles, count, totalPages, ads, page }
 }
 
 const getAllBusinessProfile = async (req, res, next) => {
@@ -172,7 +175,7 @@ const getAllBusinessProfile = async (req, res, next) => {
     //console.log(query);
 
 
-    const { businessProfiles, count, totalPages, ads, page } = searchBusiness(query, req, res,next)
+    const { businessProfiles, count, totalPages, ads, page } = searchBusiness(query, req, res, next)
     // const count = await BusinessProfileModel.countDocuments(query);
     // const totalPages = Math.ceil(count / limit);
     // const businessProfiles = await BusinessProfileModel.find(query)
