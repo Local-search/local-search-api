@@ -33,8 +33,8 @@ const CreateReview = async (req, res, next) => {
     };
     const options = { upsert: true, new: true };
 
-    const review = await ReviewModel.findOneAndUpdate(filter, update, options);
-    if (!review) {
+    const result = await ReviewModel.findOneAndUpdate(filter, update, options);
+    if (!result) {
       return next(ERROR(401, "sothing went wrong"))
     }
 
@@ -58,7 +58,7 @@ const CreateReview = async (req, res, next) => {
       { new: true }
     );
 
-    res.status(200).json({ review, message: "Review added successfully" });
+    res.status(200).json({ result, message: "Review added successfully" });
   } catch (error) {
     next(error);
   }
