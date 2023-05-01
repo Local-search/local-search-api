@@ -21,3 +21,4 @@ businessProfileRoutes.post("/", verifyUser, createBusinessProfile);
 businessProfileRoutes.put("/:id", verifyUser, updateBusinessProfileById);
 businessProfileRoutes.delete("/:id", verifyUser, deleteBusinessProfileById);
 module.exports = businessProfileRoutes;
+// merge test
