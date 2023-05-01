@@ -6,11 +6,15 @@ const {
   updateBusinessProfileById,
   deleteBusinessProfileById,
   TrendingBusiness,
+  getBusinessWithCatgId,
+  getBusinessWithKeywordId,
 } = require("./businessProfile.controller");
 
 const businessProfileRoutes = require("express").Router();
-businessProfileRoutes.get("/trending", TrendingBusiness);
 businessProfileRoutes.get("/", getAllBusinessProfile);
+businessProfileRoutes.get("/trending", TrendingBusiness);
+businessProfileRoutes.get("/keyword/:ids", getBusinessWithKeywordId);
+businessProfileRoutes.get("/catg/:ids", getBusinessWithCatgId);
 businessProfileRoutes.get("/:id", getBusinessProfileById);
 businessProfileRoutes.use(verifyJwt);
 businessProfileRoutes.post("/", verifyUser, createBusinessProfile);

@@ -31,7 +31,16 @@ const createBusinessProfile = async (req, res, next) => {
   }
 };
 
-const searchBusiness = async (query, ids, search, categorys, keywords, req, res, next) => {
+const searchBusiness = async (
+  query,
+  ids,
+  search,
+  categorys,
+  keywords,
+  req,
+  res,
+  next
+) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 10;
   // console.log('1', limit)
@@ -52,7 +61,15 @@ const searchBusiness = async (query, ids, search, categorys, keywords, req, res,
     const count = await BusinessProfileModel.countDocuments(query);
     const totalPages = Math.ceil(count / limit);
     if (page > totalPages) {
-      page = 1
+      page = 1;
+    }
+    const sortParams = {
+      rating: -1,
+      totalReviews: -1,
+      popular: -1,
+    };
+    if (search) {
+      sortParams.score = { $meta: "textScore" };
     }
     const businessProfiles = await BusinessProfileModel.find(query)
       .populate({
@@ -63,12 +80,7 @@ const searchBusiness = async (query, ids, search, categorys, keywords, req, res,
         path: "keyWord",
         select: "label",
       })
-      .sort({
-        rating: -1,
-        totalReviews: -1,
-        popular: -1,
-        score: { $meta: "textScore" },
-      })
+      .sort(sortParams)
       .skip((page - 1) * limit)
       .limit(limit)
       .select(
@@ -88,32 +100,16 @@ const searchBusiness = async (query, ids, search, categorys, keywords, req, res,
       keywords,
       (autoFetch = true)
     );
-    res.send({ businessProfiles, count, totalPages, ads, page });
+    // console.log(businessProfiles, count, totalPages, ads, page);
+    res.send({ page, count, totalPages, businessProfiles, ads });
   } catch (err) {
     next(err);
   }
-}
+};
 
 const getAllBusinessProfile = async (req, res, next) => {
   const { search } = req.query;
-  // const page = parseInt(req.query.page) || 1;
-  // let limit = parseInt(req.query.limit) || 10;
-  // // console.log('1', limit)
 
-  // if (isNaN(page) || isNaN(limit)) {
-  //   return next(ERROR(400, "Invalid page or limit value"));
-  // }
-
-  // if (limit >= 25) {
-  //   verifyJwt(req, res, () => {
-  //     if (req?.role !== "ADMIN") {
-  //       limit = 25;
-  //     }
-  //     // console.log(req.role !== "ADMIN")
-  //   });
-  // }
-
-  // console.log('2', limit)
   if (!search)
     return next(
       ERROR(
@@ -174,41 +170,64 @@ const getAllBusinessProfile = async (req, res, next) => {
     }
     //console.log(query);
 
+    await searchBusiness(
+      query,
+      ids,
+      search,
+      categorys,
+      keywords,
+      req,
+      res,
+      next
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+const getBusinessWithCatgId = async (req, res, next) => {
+  const { ids } = req.params;
+  if (!ids) return next(ERROR(401, "catg is required!"));
 
-    const { businessProfiles, count, totalPages, ads, page } = await searchBusiness(query, ids, search, categorys,
-      keywords, req, res, next)
-    // const count = await BusinessProfileModel.countDocuments(query);
-    // const totalPages = Math.ceil(count / limit);
-    // const businessProfiles = await BusinessProfileModel.find(query)
-    //   .populate({
-    //     path: "catg",
-    //     select: "label",
-    //   })
-    //   .populate({
-    //     path: "keyWord",
-    //     select: "label",
-    //   })
-    //   .sort({
-    //     rating: -1,
-    //     totalReviews: -1,
-    //     popular: -1,
-    //     score: { $meta: "textScore" },
-    //   })
-    //   .skip((page - 1) * limit)
-    //   .limit(limit)
-    //   .select(
-    //     "name address catg keyWord site time rating totalReviews status popular"
-    //   )
-    //   .lean()
-    //   .exec();
+  try {
+    const query = {
+      $or: [{ catg: { $in: ids } }],
+      $and: [{ status: "true" }],
+    };
 
-    res.status(200).json({
-      count,
-      totalPages,
-      currentPage: page,
-      ads: ads,
-      businessProfiles,
-    });
+    await searchBusiness(
+      query,
+      ids,
+      (search = false),
+      (categorys = true),
+      (keywords = false),
+      req,
+      res,
+      next
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+const getBusinessWithKeywordId = async (req, res, next) => {
+  const { ids } = req.params;
+  if (!ids) return next(ERROR(401, "catg is required!"));
+
+  try {
+    const query = {
+      $or: [{ keyWord: { $in: ids } }],
+      $and: [{ status: "true" }],
+    };
+
+    await searchBusiness(
+      query,
+      ids,
+      (search = false),
+      (categorys = false),
+      (keywords = true),
+      req,
+      res,
+      next
+    );
   } catch (err) {
     next(err);
   }
@@ -311,4 +330,6 @@ module.exports = {
   updateBusinessProfileById,
   deleteBusinessProfileById,
   TrendingBusiness,
+  getBusinessWithKeywordId,
+  getBusinessWithCatgId,
 };

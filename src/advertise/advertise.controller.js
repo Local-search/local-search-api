@@ -67,7 +67,6 @@ const getAd = async (
   keywords,
   autoFetch
 ) => {
-  console.log(limit);
   try {
     // const { catg, keyword, limit } = req.query;
     let limits = limit;
@@ -92,9 +91,13 @@ const getAd = async (
     if (search) {
       query.$or.push({ $text: { $search: search } });
     }
+    let textScore;
+    if (search) {
+      textScore = { score: { $meta: "textScore" } };
+    }
     const ads = await AdvertisementModel.find(query)
       .select("_id title desc image link createdAt important budget")
-      .sort({ score: { $meta: "textScore" } })
+      .sort(textScore)
       .skip((page - 1) * limits)
       .limit(limits)
       .select("title desc image");

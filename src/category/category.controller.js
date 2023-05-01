@@ -24,7 +24,7 @@ exports.createCategory = async (req, res, next) => {
 
 exports.getCategories = async (req, res, next) => {
   try {
-    const categories = await CategoryModel.find().lern();
+    const categories = await CategoryModel.find();
     if (!categories) return next(ERROR(404, "Category not found"));
 
     res.json(categories);
