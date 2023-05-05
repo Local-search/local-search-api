@@ -40,7 +40,7 @@ const createAds = async (req, res, next) => {
 
 const getAllAds = async (req, res, next) => {
   try {
-    const advertisements = await AdvertisementModel.find({}).populate({ businessProfile });
+    const advertisements = await AdvertisementModel.find({}).populate({ BusinessProfile });
     res.send(advertisements);
   } catch (err) {
     next(err);
