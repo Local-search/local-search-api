@@ -232,7 +232,7 @@ const getFourAdvertiser = async (req, res, next) => {
           as: 'BusinessProfileInfo'
         }
       },
-      { $project: { _id: 1, name: 1 } }
+      { $project: { _id: 1, 'BusinessProfileInfo.name': 1 } }
     ]);
     res.status(200).json({ result });
   } catch (err) {
