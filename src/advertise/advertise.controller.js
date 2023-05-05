@@ -220,6 +220,25 @@ const revenue = async (req, res, next) => {
     next(err);
   }
 };
+const getFourAdvertiser = async (req, res, next) => {
+  try {
+    const result = await AdvertisementModel.aggregate([
+      { $sample: { size: 4 } },
+      {
+        $lookup: {
+          from: 'BusinessProfile',
+          localField: 'businessProfile',
+          foreignField: '_id',
+          as: 'BusinessProfileInfo'
+        }
+      },
+      { $project: { _id: 1, name: 1 } }
+    ]);
+    res.status(200).json({ result });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   createAds,
   getAllAds,
@@ -228,4 +247,5 @@ module.exports = {
   deleteAd,
   getAdsById,
   revenue,
+  getFourAdvertiser
 };
