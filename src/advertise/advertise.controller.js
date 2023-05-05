@@ -40,7 +40,7 @@ const createAds = async (req, res, next) => {
 
 const getAllAds = async (req, res, next) => {
   try {
-    const advertisements = await AdvertisementModel.find({}).populate(  "businessProfile" );
+    const advertisements = await AdvertisementModel.find({}).populate("businessProfile").populate("advertiser");
     res.send(advertisements);
   } catch (err) {
     next(err);
@@ -232,8 +232,9 @@ const getFourAdvertiser = async (req, res, next) => {
           as: 'BusinessProfileInfo'
         }
       },
-      { $match: { BusinessProfileInfo: [] } }
-    ]);
+      { $project: { _id: 1, title: 1, businessProfile: 1, businessProfileInfo: 1 } }
+    ]).populate('businessProfile', ['name', 'address'])
+      .exec();
     res.status(200).json({ result });
   } catch (err) {
     next(err);
