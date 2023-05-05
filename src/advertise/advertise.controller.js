@@ -222,19 +222,10 @@ const revenue = async (req, res, next) => {
 };
 const getFourAdvertiser = async (req, res, next) => {
   try {
-    const result = await AdvertisementModel.aggregate([
-      { $sample: { size: 4 } },
-      {
-        $lookup: {
-          from: 'BusinessProfile',
-          localField: 'businessProfile',
-          foreignField: '_id',
-          as: 'BusinessProfileInfo'
-        }
-      },
-      { $project: { _id: 1, title: 1, businessProfile: 1, businessProfileInfo: 1 } }
-    ]).populate('businessProfile', ['name', 'address'])
-      .exec();
+    const result = await AdvertisementModel.find()
+      .select("businessProfile, budget")
+      .sort({ budget: -1 })
+      .populate("businessProfile", "name")
     res.status(200).json({ result });
   } catch (err) {
     next(err);
