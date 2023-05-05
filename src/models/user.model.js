@@ -2,18 +2,35 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
   {
-    fullName: {
+    userName: {
       type: String,
-      required: "username is required",
+      required: "Username is required",
+      unique: true,
+      max: 10
+    },
+    firstName: {
+      type: String,
+      required: "first name is required",
+      max: 15,
+    },
+    lastName: {
+      type: String,
+      max: 15
     },
     email: {
       type: String,
       required: "email is required",
-      unique: true
+      unique: true,
+      match: [
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        "inValid Email address",
+      ],
+      max: 40
     },
     phone: {
       type: Number,
       required: "phone number is required",
+      max: 13,
     },
     role: {
       type: String,
@@ -22,7 +39,11 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: "please enter strong password",
+      required: "passowrd is required",
+      match: [
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,100}/,
+        " At list 8 to 24 characters.Must have uppercase & lowercase letters, number and a special character: ! @ # $ %",
+      ],
     },
     refreshToken: {
       type: String,

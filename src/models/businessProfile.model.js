@@ -54,13 +54,21 @@ const businessProfileSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      max: 25
     },
     phone: {
       type: String,
+      max: 13,
+
     },
     email: {
       type: String,
       required: true,
+      match: [
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        "inValid Email address",
+      ],
+      max:40
     },
     address: {
       type: String,
@@ -132,9 +140,13 @@ const businessProfileSchema = new mongoose.Schema(
     days: [
       {
         type: Number,
-        max: 7,
+        max: 6,
       },
     ],
+    services: {
+      type: String,
+      max: 100
+    },
     formFillerInfo: {
       userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -230,7 +242,7 @@ businessProfileSchema.index(
   { background: true }
 );
 businessProfileSchema.index(
-  {popular : -1},
+  { popular: -1 },
 )
 businessProfileSchema.index(
   { status: 1 },
