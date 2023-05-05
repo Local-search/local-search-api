@@ -225,6 +225,7 @@ const getFourAdvertiser = async (req, res, next) => {
     const result = await AdvertisementModel.find()
       .select("businessProfile, budget")
       .sort({ budget: -1 })
+      .limit(4)
       .populate("businessProfile", "name")
     res.status(200).json({ result });
   } catch (err) {
