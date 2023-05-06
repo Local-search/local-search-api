@@ -16,5 +16,5 @@ routes.use("/ads", advertiseRoutes);
 routes.use("/catg", categoryRoutes);
 routes.use("/keyword", keywordRoutes);
 routes.use("/count", docCountRoutes);
-routes.use("/refreshToken", RefreshToken)
+routes.get("/refreshToken", RefreshToken)
 module.exports = routes;
