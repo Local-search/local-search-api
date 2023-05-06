@@ -7,10 +7,16 @@ const sendEMail = require("../helper/sendEmail");
 const TokenModel = require("../models/token");
 const crypto = require("crypto");
 const register = async (req, res, next) => {
-  const { fullName, email, password, phone } = req.body;
+  const { firstName, lastName, userName, email, phone, password } = req.body;
 
-  if (!fullName) {
-    return next(ERROR(400, "enter your full name!!!"));
+  if (!userName) {
+    return next(ERROR(400, "Choose Username name!!!"));
+  }
+  if (!firstName) {
+    return next(ERROR(400, "enter your First name!!!"));
+  }
+  if (!lastName) {
+    return next(ERROR(400, "enter your Last name!!!"));
   }
   if (!email) {
     return next(ERROR(400, "email is required!!!"));
@@ -25,10 +31,16 @@ const register = async (req, res, next) => {
     const userFound = await User.findOne({
       $or: [{ email }, { phone }],
     });
-
-    if (userFound) {
-      return next(ERROR(409, "Email or phone number is already registered!"));
-    } else if (!userFound) {
+    if (userFound.userName === userName) {
+      return next(ERROR(409, `${userName} Username is already Taken!`));
+    }
+    if (userFound.email === email) {
+      return next(ERROR(409, "Email is already registered!"));
+    }
+    if (userFound.phone === phone) {
+      return next(ERROR(409, "Phone number is already registered!"));
+    }
+    if (!userFound) {
       const salt = bcrypt.genSaltSync(5);
       const hash = bcrypt.hashSync(password, salt);
       const createUser = new User({
