@@ -103,7 +103,7 @@ const login = async (req, res, next) => {
         const accessToken = jwt.sign(
           {
             id: userFound._id,
-            fullName: userFound.fullName,
+            userName: userFound.userName,
             email: userFound.email,
             phone: userFound.phone,
             role: userFound.role,
@@ -121,7 +121,7 @@ const login = async (req, res, next) => {
         );
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
-        const fullName = result.fullName;
+        const userName = result.userName;
 
         res
           .cookie("jwt", refreshToken, {
@@ -130,8 +130,8 @@ const login = async (req, res, next) => {
           })
           .status(200)
           .json({
-            message: `welcome Back ${fullName}`,
-            fullName,
+            message: `welcome Back ${userName}`,
+            userName,
             accessToken,
           });
       }
