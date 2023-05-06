@@ -3,7 +3,7 @@ const User = require("../models/user.model");
 const ERROR = require("../utils/Error");
 
 const createUser = async (req, res, next) => {
-  const { firstName,lastName, userName, email, phone, password, role } = req.body;
+  const { firstName, lastName, userName, email, phone, password, role } = req.body;
 
   if (!firstName || !lastName || !userName || !email || !phone || !password) {
     return next(ERROR(400, "All feilds are Required"));
@@ -18,7 +18,14 @@ const createUser = async (req, res, next) => {
     }
     const salt = bcrypt.genSaltSync(5);
     const hash = bcrypt.hashSync(password, salt);
-    const newObj = { email, phone, password: hash, role };
+    const newObj = {
+      firstName,
+      lastName,
+      userName,
+      email,
+      phone,
+      password: hash, role
+    };
     if (newObj) {
       const newUser = await User.create(newObj);
       const { password, ...otherDetails } = newUser._doc;
@@ -85,4 +92,4 @@ const deleteUser = async (req, res, next) => {
     next(err);
   }
 };
-module.exports = { createUser, getUsers, getUser, deleteUser,updateUser };
+module.exports = { createUser, getUsers, getUser, deleteUser, updateUser };

@@ -44,7 +44,9 @@ const register = async (req, res, next) => {
       const salt = bcrypt.genSaltSync(5);
       const hash = bcrypt.hashSync(password, salt);
       const createUser = new User({
-        fullName,
+        firstName,
+        lastName,
+        userName,
         email,
         phone,
         password: hash,
