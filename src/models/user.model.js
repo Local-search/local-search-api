@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema(
     phone: {
       type: Number,
       required: "phone number is required",
-      max: 13,
+      max: 10,
     },
     role: {
       type: String,
