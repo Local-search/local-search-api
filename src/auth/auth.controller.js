@@ -31,7 +31,7 @@ const register = async (req, res, next) => {
     const userFound = await User.findOne({
       $or: [{ email }, { phone }],
     });
-    if (userFound.userName === userName) {
+    if (userFound?.userName === userName) {
       return next(ERROR(409, `${userName} Username is already Taken!`));
     }
     if (userFound.email === email) {
