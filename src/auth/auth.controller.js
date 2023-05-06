@@ -34,10 +34,10 @@ const register = async (req, res, next) => {
     if (userFound?.userName === userName) {
       return next(ERROR(409, `${userName} Username is already Taken!`));
     }
-    if (userFound.email === email) {
+    if (userFound?.email === email) {
       return next(ERROR(409, "Email is already registered!"));
     }
-    if (userFound.phone === phone) {
+    if (userFound?.phone === phone) {
       return next(ERROR(409, "Phone number is already registered!"));
     }
     if (!userFound) {
