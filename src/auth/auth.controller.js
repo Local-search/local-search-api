@@ -7,10 +7,10 @@ const sendEMail = require("../helper/sendEmail");
 const TokenModel = require("../models/token");
 const crypto = require("crypto");
 const register = async (req, res, next) => {
-  const { firstName, lastName, userName, email, phone, password } = req.body;
+  const { firstName, lastName, username, email, phone, password } = req.body;
 
-  if (!userName) {
-    return next(ERROR(400, "Choose Username name!!!"));
+  if (!username) {
+    return next(ERROR(400, "Choose username name!!!"));
   }
   if (!firstName) {
     return next(ERROR(400, "enter your First name!!!"));
@@ -31,8 +31,8 @@ const register = async (req, res, next) => {
     const userFound = await User.findOne({
       $or: [{ email }, { phone }],
     });
-    if (userFound?.userName === userName) {
-      return next(ERROR(409, `${userName} Username is already Taken!`));
+    if (userFound?.username === username) {
+      return next(ERROR(409, `${username} username is already Taken!`));
     }
     if (userFound?.email === email) {
       return next(ERROR(409, "Email is already registered!"));
@@ -46,7 +46,7 @@ const register = async (req, res, next) => {
       const createUser = new User({
         firstName,
         lastName,
-        userName,
+        username,
         email,
         phone,
         password: hash,
@@ -103,8 +103,9 @@ const login = async (req, res, next) => {
         const accessToken = jwt.sign(
           {
             id: userFound._id,
-            userName: userFound.userName,
+            username: userFound.username,
             email: userFound.email,
+            firstName: userFound.firstName,
             phone: userFound.phone,
             role: userFound.role,
           },
@@ -114,6 +115,7 @@ const login = async (req, res, next) => {
         const refreshToken = jwt.sign(
           {
             id: userFound._id,
+            username: userFound.username,
             role: userFound.role,
           },
           REFRESH_SEC,
@@ -121,7 +123,7 @@ const login = async (req, res, next) => {
         );
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
-        const userName = result.userName;
+        const username = result.username;
 
         res
           .cookie("jwt", refreshToken, {
@@ -130,8 +132,8 @@ const login = async (req, res, next) => {
           })
           .status(200)
           .json({
-            message: `welcome Back ${userName}`,
-            userName,
+            message: `welcome Back ${username}`,
+            username,
             accessToken,
           });
       }

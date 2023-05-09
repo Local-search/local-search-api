@@ -17,12 +17,10 @@ const RefreshToken = async (req, res, next) => {
         const accessToken = jwt.sign(
           {
             id: decoded._id,
-            fullName: decoded.fullName,
-            role: decoded.role,
-            email: decoded.email,
+            username: decoded.username,
           },
           JWT_SEC,
-          { expiresIn: "1m" }
+          { expiresIn: "2m" }
         );
         res.status(201).json(accessToken);
       });
