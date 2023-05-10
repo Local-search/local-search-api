@@ -82,12 +82,12 @@ const login = async (req, res, next) => {
         .toString("hex")
         .slice(0, length);
 
-      await sendEMail(next, verificationCode, email);
       const saveToken = new TokenModel({
         user: userFound._id,
         token: verificationCode,
       });
       await saveToken.save();
+      await sendEMail(next, verificationCode, email);
       return res.status(201).json({
         message:
           "A verification code has been sent to your email. Please check your inbox.",
@@ -150,7 +150,7 @@ const verifyOtp = async (req, res, next) => {
     const isUserIdFound = await TokenModel.findOne({ user: id });
     console.log(isUserIdFound);
     if (!isUserIdFound) return next(ERROR(404, "user not found"));
-    if (isUserIdFound.token !== otp) return next(Error(409));
+    if (isUserIdFound.token !== otp) return next(Error(409, "invalid OTP"));
     if (isUserIdFound.token === otp) {
       await User.findByIdAndUpdate(id, { status: "true" });
     }

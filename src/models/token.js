@@ -12,9 +12,7 @@ const TokenSchema = new mongoose.Schema({
           .exec()
           .then((count) => count === 0);
       },
-      status: "false",
-      message:
-        "A verification code has already been sent to this email address!",
+      errMsg: "409",
     },
   },
   token: { type: String, require: true },
