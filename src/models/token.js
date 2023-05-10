@@ -12,7 +12,7 @@ const TokenSchema = new mongoose.Schema({
           .exec()
           .then((count) => count === 0);
       },
-      errMsg: "409",
+      message: "409",
     },
   },
   token: { type: String, require: true },
