@@ -89,7 +89,7 @@ const likeReview = async (req, res, next) => {
     // console.log(id)
     // console.log(review.user.toString())
     if (id === review.user.toString()) {
-      return next(ERROR(403, `You cannot add like to your own review`));
+      return next(ERROR(409, `You cannot add like to your own review`));
     }
     let updateObj = {};
 
@@ -132,7 +132,7 @@ const dislikeReview = async (req, res, next) => {
       return next(ERROR(404, "Review not found"));
     }
     if (id === review.user.toString()) {
-      return next(ERROR(403, `You cannot add dislike to your own review`));
+      return next(ERROR(409, `You cannot add dislike to your own review`));
     }
     // console.log(id === review.user)
     // console.log(id)
