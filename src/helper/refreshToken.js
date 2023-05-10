@@ -27,7 +27,9 @@ const RefreshToken = async (req, res, next) => {
         res.status(201).json(accessToken);
       });
     }
-  } catch (err) {}
+  } catch (err) {
+    res.send(err)
+  }
 };
 
 module.exports = RefreshToken
