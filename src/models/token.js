@@ -12,11 +12,11 @@ const TokenSchema = new mongoose.Schema({
           .exec()
           .then((count) => count === 0);
       },
-      message: "409",
+      message: (props) => `409 ${props.value}`,
     },
   },
   token: { type: String, require: true },
-  TokenCreatedAt: { type: Date, default: Date.now(), expires: 900 },
+  TokenCreatedAt: { type: Date, default: Date.now(), expires: 180 },
 });
 const TokenModel = mongoose.model("Token", TokenSchema);
 module.exports = TokenModel;
