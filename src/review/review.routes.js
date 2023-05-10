@@ -2,7 +2,7 @@ const { verifyJwt, verifyUser, } = require('../auth/auth.middleware')
 const { CreateReview, likeReview, dislikeReview, getAllReview } = require('./review.controller')
 
 const reviewsRoutes = require('express').Router()
-reviewsRoutes.get('/:businessId', getAllReview)
+// reviewsRoutes.get('/:businessId', getAllReview)
 reviewsRoutes.use(verifyJwt)
 reviewsRoutes.use(verifyUser)
 reviewsRoutes.put('/like/:reviewId', likeReview)
