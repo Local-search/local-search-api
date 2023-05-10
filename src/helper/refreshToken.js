@@ -1,4 +1,6 @@
 const { JWT_SEC } = require("../config/secrets");
+const jwt = require("jsonwebtoken");
+
 const { REFRESH_SEC } = require("../config/secrets");
 const User = require("../models/user.model");
 const ERROR = require("../utils/Error");
