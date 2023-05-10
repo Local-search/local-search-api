@@ -3,9 +3,9 @@ const User = require("../models/user.model");
 const ERROR = require("../utils/Error");
 
 const createUser = async (req, res, next) => {
-  const { firstName, lastName, userName, email, phone, password, role } = req.body;
+  const { firstName, lastName, username, email, phone, password, role } = req.body;
 
-  if (!firstName || !lastName || !userName || !email || !phone || !password) {
+  if (!firstName || !lastName || !username || !email || !phone || !password) {
     return next(ERROR(400, "All feilds are Required"));
   }
   try {
@@ -21,7 +21,7 @@ const createUser = async (req, res, next) => {
     const newObj = {
       firstName,
       lastName,
-      userName,
+      username,
       email,
       phone,
       password: hash, role
