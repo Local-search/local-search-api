@@ -67,7 +67,7 @@ const getAllReview = async (req, res, next) => {
   const { businessId } = req.params;
 
   try {
-    const reviews = await ReviewModel.find({ businessProfile: businessId }).sort({ createdAt: -1 });
+    const reviews = await ReviewModel.find({ businessProfile: businessId }).sort({ createdAt: -1 }).populate("user", "username");
     res.status(200).json({ status: "success", reviews });
   } catch (err) {
     next(err);
