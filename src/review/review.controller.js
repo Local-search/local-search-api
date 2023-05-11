@@ -65,7 +65,7 @@ const CreateReview = async (req, res, next) => {
 };
 const getAllReview = async (req, res, next) => {
   const { businessId } = req.params;
-  
+
   try {
     const reviews = await ReviewModel.find({ businessProfile: businessId }).sort({ createdAt: -1 });
     res.status(200).json({ status: "success", reviews });
@@ -140,33 +140,37 @@ const likeReview = async (req, res, next) => {
 
     let updateObj = {};
     let message;
-    let likeCount;
+    let countChange;
+    let countRemove;
 
-    if (review.likes.includes(userId)) {
+    if (review.dislikes.includes(userId)) {
       updateObj = {
-        $pullAll: { likes: [userId] },
-        $inc: { likeCount: -1 },
-      };
-      message = "Like removed";
-      likeCount = -1;
-    } else {
-      if (review.dislikes.includes(userId)) {
-        updateObj = {
-          $pullAll: { dislikes: [userId] },
-          $inc: { dislikeCount: -1 },
-        };
-      }
-      updateObj = {
-        $addToSet: { likes: userId },
-        $inc: { likeCount: 1 },
+        $pullAll: { dislikes: [userId] },
+        $inc: { dislikeCount: -1, likeCount: 1 },
+        $addToSet: { likes: userId }
       };
       message = "Review liked";
-      likeCount = 1;
+      countChange = 1;
+      countRemove = -1;
+    } else if (review.likes.includes(userId)) {
+      updateObj = {
+        $pullAll: { likes: [userId] },
+        $inc: { likeCount: -1 }
+      };
+      message = "Like removed";
+      countChange = -1;
+    } else {
+      updateObj = {
+        $addToSet: { likes: userId },
+        $inc: { likeCount: 1 }
+      };
+      message = "Review liked";
+      countChange = 1;
     }
 
     await ReviewModel.findOneAndUpdate({ _id: reviewId }, updateObj);
 
-    res.status(200).json({ message, likeCount, userId, id: review._id });
+    res.status(200).json({ message, countChange, countRemove, userId, id: review._id });
   } catch (err) {
     next(err);
   }
@@ -238,33 +242,37 @@ const dislikeReview = async (req, res, next) => {
 
     let updateObj = {};
     let message;
-    let dislikeCount;
+    let countChange;
+    let countRemove;
 
-    if (review.dislikes.includes(userId)) {
+    if (review.likes.includes(userId)) {
       updateObj = {
-        $pullAll: { dislikes: [userId] },
-        $inc: { dislikeCount: -1 },
-      };
-      message = "Dislike removed";
-      dislikeCount = -1;
-    } else {
-      if (review.likes.includes(userId)) {
-        updateObj = {
-          $pullAll: { likes: [userId] },
-          $inc: { likeCount: -1 },
-        };
-      }
-      updateObj = {
-        $addToSet: { dislikes: userId },
-        $inc: { dislikeCount: 1 },
+        $pullAll: { likes: [userId] },
+        $inc: { likeCount: -1, dislikeCount: 1 },
+        $addToSet: { dislikes: userId }
       };
       message = "Review disliked";
-      dislikeCount = 1;
+      countChange = 1;
+      countRemove = -1;
+    } else if (review.dislikes.includes(userId)) {
+      updateObj = {
+        $pullAll: { dislikes: [userId] },
+        $inc: { dislikeCount: -1 }
+      };
+      message = "Dislike removed";
+      countChange = -1;
+    } else {
+      updateObj = {
+        $addToSet: { dislikes: userId },
+        $inc: { dislikeCount: 1 }
+      };
+      message = "Review disliked";
+      countChange = 1;
     }
 
     await ReviewModel.findOneAndUpdate({ _id: reviewId }, updateObj);
 
-    res.status(200).json({ message, dislikeCount, userId, id: review._id  });
+    res.status(200).json({ message, countRemove, countChange, userId, id: review._id });
   } catch (err) {
     next(err);
   }
