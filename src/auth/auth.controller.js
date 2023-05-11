@@ -110,7 +110,7 @@ const login = async (req, res, next) => {
             role: userFound.role,
           },
           JWT_SEC,
-          { expiresIn: "10s" }
+          { expiresIn: "1h" }
         );
         const refreshToken = jwt.sign(
           {
@@ -119,7 +119,7 @@ const login = async (req, res, next) => {
             role: userFound.role,
           },
           REFRESH_SEC,
-          { expiresIn: "2m" }
+          { expiresIn: "2h" }
         );
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
