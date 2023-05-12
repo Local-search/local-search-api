@@ -209,7 +209,7 @@ const revenue = async (req, res, next) => {
       },
       {
         $group: {
-          _id: "$month",
+          month: "$month",
           total: { $sum: "$earn" },
         },
       },
