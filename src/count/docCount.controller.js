@@ -7,12 +7,14 @@ const count = async (req, res, next, model, status) => {
   try {
     if (status === "total") {
       const result = await model.countDocuments();
+      res.status(200).json(result);
+
     } else {
       const result = await model.countDocuments({
         $and: [{ status: status || "true" }],
       });
+      res.status(200).json(result);
     }
-    res.status(200).json({ result });
   } catch (err) {
     next(err);
   }
