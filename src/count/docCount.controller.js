@@ -49,7 +49,7 @@ exports.countAds = async (req, res, next) => {
     count(req, res, next, AdvertisementModel, "PENDING");
   } else if (status === "true") {
     count(req, res, next, AdvertisementModel, "APPROVED");
-  } else if (status == "all") {
+  } else if (status == "total") {
     count(req, res, next, AdvertisementModel, status);
   } else {
     count(req, res, next, AdvertisementModel, "REJECTED");
