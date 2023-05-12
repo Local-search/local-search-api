@@ -5,9 +5,13 @@ const AdvertisementModel = require("../models/advertisement.model");
 const User = require("../models/user.model");
 const count = async (req, res, next, model, status) => {
   try {
-    const result = await model.countDocuments({
-      $and: [{ status: status || "true" }],
-    });
+    if (status === "total") {
+      const result = await model.countDocuments();
+    } else {
+      const result = await model.countDocuments({
+        $and: [{ status: status || "true" }],
+      });
+    }
     res.status(200).json({ result });
   } catch (err) {
     next(err);
@@ -40,11 +44,13 @@ exports.countBusiness = async (req, res, next) => {
 exports.countAds = async (req, res, next) => {
   const { status } = req.query;
   if (status === "false") {
-    count(req, res, next, AdvertisementModel, "REJECTED");
+    count(req, res, next, AdvertisementModel, "PENDING");
   } else if (status === "true") {
     count(req, res, next, AdvertisementModel, "APPROVED");
+  } else if (status == "all") {
+    count(req, res, next, AdvertisementModel, status);
   } else {
-    count(req, res, next, AdvertisementModel, "PENDING");
+    count(req, res, next, AdvertisementModel, "REJECTED");
   }
 };
 exports.countUser = async (req, res, next) => {
