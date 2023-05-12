@@ -52,12 +52,12 @@ const getUsers = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   const id = req.id;
   try {
-    const user = await User.findById({ _id: id }).select("-password").lean();
+    const user = await User.findById({ _id: id }).select("firstName,lastName, username, phone, email").lean();
     if (!user) {
       return next(ERROR(401, "User not found."));
     }
     res.status(200).json({
-      userInfo: user,
+      user,
     });
   } catch (err) {
     next(err);

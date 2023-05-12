@@ -39,10 +39,10 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: "passowrd is required",
-      // match: [
-      //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,100}/,
-      //   "At list 8 characters.Must have uppercase & lowercase letters, number and a special character: ! @ # $ %",
-      // ],
+      match: [
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,100}/,
+        "At list 8 characters.Must have uppercase & lowercase letters, number and a special character: ! @ # $ %",
+      ],
     },
     refreshToken: {
       type: String,
