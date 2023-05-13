@@ -3,6 +3,7 @@ const {
   createBusinessProfile,
   getBusinessProfileById,
   getAllBusinessProfile,
+  getSearchBusinessProfile,
   updateBusinessProfileById,
   deleteBusinessProfileById,
   TrendingBusiness,
@@ -11,7 +12,8 @@ const {
 } = require("./businessProfile.controller");
 
 const businessProfileRoutes = require("express").Router();
-businessProfileRoutes.get("/", getAllBusinessProfile);
+businessProfileRoutes.get("/all", getAllBusinessProfile);
+businessProfileRoutes.get("/", getSearchBusinessProfile);
 businessProfileRoutes.get("/trending", TrendingBusiness);
 businessProfileRoutes.get("/keyword/:ids", getBusinessWithKeywordId);
 businessProfileRoutes.get("/catg/:ids", getBusinessWithCatgId);

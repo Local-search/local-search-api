@@ -108,6 +108,14 @@ const searchBusiness = async (
 };
 
 const getAllBusinessProfile = async (req, res, next) => {
+  try {
+    const allProfiles = await BusinessProfileModel.find()
+    res.status(200).json(allProfiles)
+  } catch (err) {
+    next(err)
+  }
+}
+const getSearchBusinessProfile = async (req, res, next) => {
   const { search } = req.query;
 
   if (!search)
@@ -332,4 +340,5 @@ module.exports = {
   TrendingBusiness,
   getBusinessWithKeywordId,
   getBusinessWithCatgId,
+  getSearchBusinessProfile
 };
