@@ -51,6 +51,10 @@ const times = [
 ];
 const businessProfileSchema = new mongoose.Schema(
   {
+    logo: {
+      type: String,
+      max: 500,
+    },
     name: {
       type: String,
       required: true,
@@ -68,7 +72,7 @@ const businessProfileSchema = new mongoose.Schema(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         "inValid Email address",
       ],
-      max:40
+      max: 40
     },
     address: {
       type: String,
