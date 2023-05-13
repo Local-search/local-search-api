@@ -43,7 +43,7 @@ const getAllBusinessProfile = async (req, res, next) => {
     const totalPages = Math.ceil(count / limit);
     const allProfiles = await BusinessProfileModel.find().skip((page - 1) * limit)
       .limit(limit)
-    res.status(200).json({ result: allProfiles, count: count, totalPages: totalPages, currentPage: page, limit })
+    res.status(200).json({ result: allProfiles, count, totalPages, page, limit })
   } catch (err) {
     next(err)
   }
