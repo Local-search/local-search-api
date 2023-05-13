@@ -49,8 +49,13 @@ const getAllAds = async (req, res, next) => {
   try {
     const count = await AdvertisementModel.countDocuments();
     const totalPages = Math.ceil(count / limit);
-    const advertisements = await AdvertisementModel.find({}).populate("businessProfile", "name").populate("advertiser", "username").populate("catg");
-    res.status(200).json({ result: advertisements,  count,  totalPages, page, limit })
+    const advertisements = await AdvertisementModel.find()
+      .populate("businessProfile", "name")
+      .populate("advertiser", "username")
+      .populate("catg")
+      .skip((page - 1) * limit)
+      .limit(limit)
+    res.status(200).json({ result: advertisements, count, totalPages, page, limit })
   } catch (err) {
     next(err);
   }
