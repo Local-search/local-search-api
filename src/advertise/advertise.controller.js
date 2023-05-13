@@ -39,9 +39,18 @@ const createAds = async (req, res, next) => {
 };
 
 const getAllAds = async (req, res, next) => {
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  // console.log('1', limit)
+
+  if (isNaN(page) || isNaN(limit)) {
+    return next(ERROR(400, "Invalid page or limit value"));
+  }
   try {
+    const count = await AdvertisementModel.countDocuments();
+    const totalPages = Math.ceil(count / limit);
     const advertisements = await AdvertisementModel.find({}).populate("businessProfile", "name").populate("advertiser", "username").populate("catg");
-    res.send(advertisements);
+    res.status(200).json({ result: advertisements, count: count, totalPages: totalPages, currentPage: page, limit })
   } catch (err) {
     next(err);
   }

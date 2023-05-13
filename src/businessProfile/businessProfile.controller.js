@@ -30,7 +30,24 @@ const createBusinessProfile = async (req, res, next) => {
     next(err);
   }
 };
+const getAllBusinessProfile = async (req, res, next) => {
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  // console.log('1', limit)
 
+  if (isNaN(page) || isNaN(limit)) {
+    return next(ERROR(400, "Invalid page or limit value"));
+  }
+  try {
+    const count = await BusinessProfileModel.countDocuments();
+    const totalPages = Math.ceil(count / limit);
+    const allProfiles = await BusinessProfileModel.find().skip((page - 1) * limit)
+      .limit(limit)
+    res.status(200).json({ result: allProfiles, count: count, totalPages: totalPages, currentPage: page, limit })
+  } catch (err) {
+    next(err)
+  }
+}
 const searchBusiness = async (
   query,
   ids,
@@ -107,14 +124,7 @@ const searchBusiness = async (
   }
 };
 
-const getAllBusinessProfile = async (req, res, next) => {
-  try {
-    const allProfiles = await BusinessProfileModel.find()
-    res.status(200).json(allProfiles)
-  } catch (err) {
-    next(err)
-  }
-}
+
 const getSearchBusinessProfile = async (req, res, next) => {
   const { search } = req.query;
 
