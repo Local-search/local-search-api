@@ -88,10 +88,10 @@ const businessProfileSchema = new mongoose.Schema(
 
     location: {
       lat: {
-        type: Number,
+        type: String,
       },
       lng: {
-        type: Number,
+        type: String,
       },
     },
     catg: [
@@ -144,7 +144,6 @@ const businessProfileSchema = new mongoose.Schema(
     days: [
       {
         type: Number,
-        max: 6,
       },
     ],
     services: {
