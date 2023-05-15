@@ -20,7 +20,7 @@ const verifyJwt = (req, res, next) => {
     next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
-      next(ERROR(403, "token expired!!"));
+      next(ERROR(400, "token expired!!"));
     } else {
       next(ERROR(401, "Invalid token!!"));
     }

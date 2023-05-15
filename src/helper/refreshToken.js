@@ -11,7 +11,7 @@ const RefreshToken = async (req, res, next) => {
   const refreshToken = cookies.jwt;
   try {
     const userFound = await User.findOne({ refreshToken });
-    if (!userFound) return next(ERROR(403, "invalid token"));
+    if (!userFound) return next(ERROR(400, "invalid token"));
     if (userFound) {
       jwt.verify(refreshToken, REFRESH_SEC, (err, decoded) => {
         if (err || userFound.username !== decoded.username)
