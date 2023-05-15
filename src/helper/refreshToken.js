@@ -30,35 +30,11 @@ const RefreshToken = async (req, res, next) => {
         res.status(201).json({ accessToken });
 
       } catch (err) {
-        // if (err.name === "TokenExpiredError") {
-        //   next(ERROR(403, "refreshtoken expired"));
-        // } else {
-        //   next(ERROR(401, "Invalid refreshtoken!!"));
-        // }
         res.status(400).json(err)
       }
-
-
-      // jwt.verify(refreshToken, REFRESH_SEC, (err, decoded) => {
-      //   if (err || userFound.username !== decoded.username)
-      //     return next(ERROR(400, "refreshtoken expired"));
-      //   const accessToken = jwt.sign(
-      //     {
-      //       id: userFound._id,
-      //       username: userFound.username,
-      //       email: userFound.email,
-      //       firstName: userFound.firstName,
-      //       phone: userFound.phone,
-      //       role: userFound.role,
-      //     },
-      //     JWT_SEC,
-      //     { expiresIn: "15s" }
-      //   );
-      //   res.status(201).json({ accessToken });
-      // });
     }
   } catch (err) {
-    res.send(err)
+    next(err)
   }
 };
 
