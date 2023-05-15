@@ -11,11 +11,11 @@ const RefreshToken = async (req, res, next) => {
   const refreshToken = cookies.jwt;
   try {
     const userFound = await User.findOne({ refreshToken });
-    if (!userFound) return next(ERROR(400, "invalid token"));
+    if (!userFound) return next(ERROR(400, "invalid refreshtoken"));
     if (userFound) {
       jwt.verify(refreshToken, REFRESH_SEC, (err, decoded) => {
         if (err || userFound.username !== decoded.username)
-          return next(ERROR(403, "Token expired"));
+          return next(ERROR(400, "refreshtoken expired"));
         const accessToken = jwt.sign(
           {
             id: decoded.id,
