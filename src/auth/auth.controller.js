@@ -150,7 +150,7 @@ const verifyOtp = async (req, res, next) => {
   if (!otp) return next(ERROR(400, "enter you verification code!"));
   try {
     const isUserIdFound = await TokenModel.findOne({ user: id });
-    console.log(isUserIdFound);
+    // console.log(isUserIdFound);
     if (!isUserIdFound) return next(ERROR(404, "user not found"));
     if (isUserIdFound.token !== otp) return next(ERROR(409, "invalid OTP"));
     if (isUserIdFound.token === otp) {

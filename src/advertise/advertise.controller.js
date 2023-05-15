@@ -203,10 +203,10 @@ const deleteAd = async (req, res, next) => {
 };
 const revenue = async (req, res, next) => {
   const date = new Date();
-  console.log(date);
+  // console.log(date);
 
   const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
-  console.log(lastMonth);
+  // console.log(lastMonth);
 
   const prevMonth = new Date(date.setMonth(lastMonth.getMonth() - 1));
 
