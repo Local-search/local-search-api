@@ -30,11 +30,12 @@ const RefreshToken = async (req, res, next) => {
         res.status(201).json({ accessToken });
 
       } catch (err) {
-        if (err.name === "TokenExpiredError") {
-          next(ERROR(403, "refreshtoken expired"));
-        } else {
-          next(ERROR(401, "Invalid refreshtoken!!"));
-        }
+        // if (err.name === "TokenExpiredError") {
+        //   next(ERROR(403, "refreshtoken expired"));
+        // } else {
+        //   next(ERROR(401, "Invalid refreshtoken!!"));
+        // }
+        res.status(400).json(err)
       }
 
 
