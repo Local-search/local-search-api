@@ -19,7 +19,10 @@ const RefreshToken = async (req, res, next) => {
         const accessToken = jwt.sign(
           {
             id: decoded.id,
-            username: decoded.username,
+            email: decoded.email,
+            firstName: decoded.firstName,
+            phone: decoded.phone,
+            role: decoded.role,
           },
           JWT_SEC,
           { expiresIn: "30s" }
