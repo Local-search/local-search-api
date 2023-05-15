@@ -13,22 +13,48 @@ const RefreshToken = async (req, res, next) => {
     const userFound = await User.findOne({ refreshToken });
     if (!userFound) return next(ERROR(400, "invalid refreshtoken"));
     if (userFound) {
-      jwt.verify(refreshToken, REFRESH_SEC, (err, decoded) => {
-        if (err || userFound.username !== decoded.username)
-          return next(ERROR(400, "refreshtoken expired"));
+      try {
+        const decoded = jwt.verify(refreshToken, REFRESH_SEC);
         const accessToken = jwt.sign(
           {
-            id: decoded.id,
-            email: decoded.email,
-            firstName: decoded.firstName,
-            phone: decoded.phone,
-            role: decoded.role,
+            id: userFound._id,
+            username: userFound.username,
+            email: userFound.email,
+            firstName: userFound.firstName,
+            phone: userFound.phone,
+            role: userFound.role,
           },
           JWT_SEC,
           { expiresIn: "15s" }
         );
-        res.status(201).json({accessToken});
-      });
+        res.status(201).json({ accessToken });
+
+      } catch (err) {
+        if (err.name === "TokenExpiredError") {
+          next(ERROR(403, "refreshtoken expired"));
+        } else {
+          next(ERROR(401, "Invalid refreshtoken!!"));
+        }
+      }
+
+
+      // jwt.verify(refreshToken, REFRESH_SEC, (err, decoded) => {
+      //   if (err || userFound.username !== decoded.username)
+      //     return next(ERROR(400, "refreshtoken expired"));
+      //   const accessToken = jwt.sign(
+      //     {
+      //       id: userFound._id,
+      //       username: userFound.username,
+      //       email: userFound.email,
+      //       firstName: userFound.firstName,
+      //       phone: userFound.phone,
+      //       role: userFound.role,
+      //     },
+      //     JWT_SEC,
+      //     { expiresIn: "15s" }
+      //   );
+      //   res.status(201).json({ accessToken });
+      // });
     }
   } catch (err) {
     res.send(err)
