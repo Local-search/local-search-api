@@ -18,8 +18,9 @@ const RefreshToken = async (req, res, next) => {
           return next(ERROR(403, "Token expired"));
         const accessToken = jwt.sign(
           {
-            id: decoded._id,
+            id: decoded.id,
             username: decoded.username,
+            usernameFromDb : userFound.username
           },
           JWT_SEC,
           { expiresIn: "30s" }
