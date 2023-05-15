@@ -20,12 +20,11 @@ const RefreshToken = async (req, res, next) => {
           {
             id: decoded.id,
             username: decoded.username,
-            usernameFromDb : userFound.username
           },
           JWT_SEC,
           { expiresIn: "30s" }
         );
-        res.status(201).json(accessToken);
+        res.status(201).json({accessToken});
       });
     }
   } catch (err) {
