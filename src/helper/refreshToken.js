@@ -22,7 +22,7 @@ const RefreshToken = async (req, res, next) => {
             username: decoded.username,
           },
           JWT_SEC,
-          { expiresIn: "1h" }
+          { expiresIn: "1m" }
         );
         res.status(201).json(accessToken);
       });
