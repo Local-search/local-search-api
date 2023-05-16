@@ -36,7 +36,7 @@ const businessStatus = async (req, res, next) => {
     try {
         const updateStatus = await businessProfileModel.findByIdAndUpdate(id,
             {
-                $set: { status: "true" }
+                $set: { status }
             },
             { new: true }
         )
