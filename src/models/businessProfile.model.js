@@ -113,7 +113,6 @@ const businessProfileSchema = new mongoose.Schema(
     establishIn: {
       type: Number,
       required: "please choose the year when the business was establish",
-      max: 4,
     },
     site: {
       type: String,
