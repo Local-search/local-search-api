@@ -119,7 +119,7 @@ const login = async (req, res, next) => {
             role: userFound.role,
           },
           REFRESH_SEC,
-          { expiresIn: "1m" }
+          { expiresIn: "3m" }
         );
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
