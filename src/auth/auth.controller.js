@@ -88,11 +88,9 @@ const login = async (req, res, next) => {
       });
       await saveToken.save();
       await sendEMail(next, verificationCode, email);
-      return res.status(201).json({
-        message:
-          "A verification code has been sent to your email. Please check your inbox.",
-        id: userFound._id,
-      });
+      return next(ERROR(307,
+        `${userFound._id} A verification code has been sent to your email. Please check your inbox `
+      ));
     }
     if (userFound) {
       const matchPassword = await bcrypt.compare(password, userFound.password);
