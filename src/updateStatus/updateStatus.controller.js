@@ -2,6 +2,7 @@ const categoryModel = require("../models/category.model");
 const keywordModel = require("../models/keyWord.model");
 const businessProfileModel = require("../models/businessProfile.model");
 const AdvertisementModel = require("../models/advertisement.model");
+const ERROR = require("../utils/Error")
 const UpdateStatus = async (req, res, next, model, query,) => {
     const { id } = req.params
 
