@@ -2,7 +2,7 @@ const categoryModel = require("../models/category.model");
 const keywordModel = require("../models/keyWord.model");
 const businessProfileModel = require("../models/businessProfile.model");
 const AdvertisementModel = require("../models/advertisement.model");
-const UpdateStatus =async (req, res, next, model, query,) => {
+const UpdateStatus = async (req, res, next, model, query,) => {
     const { id } = req.params
 
     try {
@@ -25,7 +25,7 @@ const businessStatus = (req, res, next) => {
     const changeStatus = status === "false" ? "true" : "false"
     const query = { status: changeStatus }
     if (status) {
-        updateStatus(req, res, next, businessProfileModel, query)
+        UpdateStatus(req, res, next, businessProfileModel, query)
     }
 
 }
