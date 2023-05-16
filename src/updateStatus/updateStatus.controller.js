@@ -40,7 +40,7 @@ const businessStatus = async (req, res, next) => {
             },
             { new: true }
         )
-        cconsole.log(updateStatus)
+        console.log(updateStatus)
         if (!updateStatus) {
             return next(ERROR(404, "there is no data with accosicate id to update!"));
         }
