@@ -20,8 +20,8 @@ const createBusinessProfile = async (req, res, next) => {
       ...otherData,
       formFillerInfo: {
         userId: req.id,
-        role: req.body.formFillerInfo.role,
-        message: req.body.formFillerInfo.message,
+        role: formFillerInfo.role,
+        message: formFillerInfo.message,
       },
     });
     await businessProfile.save();
