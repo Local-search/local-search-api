@@ -12,6 +12,7 @@ const UpdateStatus = async (req, res, next, model, query,) => {
             },
             { new: true }
         )
+        cconsole.log(updateStatus)
         if (!updateStatus) {
             return next(ERROR(404, "there is no data with accosicate id to update!"));
         }
@@ -24,6 +25,7 @@ const businessStatus = (req, res, next) => {
     const { status } = req.query
     const changeStatus = status === "false" ? "true" : "false"
     const query = { status: changeStatus }
+    console.log("query",query)
     if (status) {
         UpdateStatus(req, res, next, businessProfileModel, query)
     }
