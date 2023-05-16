@@ -30,13 +30,13 @@ const businessStatus = async (req, res, next) => {
     // if (status) {
     //     UpdateStatus(req, res, next, businessProfileModel, query)
     // }
-
+    console.log("status", status)
     const { id } = req.params
 
     try {
         const updateStatus = await businessProfileModel.findByIdAndUpdate(id,
             {
-                $set: { status: status }
+                $set: { status: "true" }
             },
             { new: true }
         )
