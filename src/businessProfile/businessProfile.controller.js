@@ -101,7 +101,7 @@ const searchBusiness = async (
       .skip((page - 1) * limit)
       .limit(limit)
       .select(
-        "name address catg keyWord site time rating totalReviews status popular"
+        "name address catg keyWord site time rating totalReviews status popular logo"
       )
       .lean()
       .exec();
@@ -259,7 +259,7 @@ const getBusinessProfileById = async (req, res, next) => {
     })
 
       .select(
-        "name phone email address location catg keyword postBox establishIn site socailMedia openAllTime time days reviews rating totalReviews status popular"
+        "name phone email address location catg keyword postBox establishIn site nosite socailMedia openAllTime time days reviews rating totalReviews status popular logo"
       )
       .populate("catg", "label", { $and: [{ status: "true" }] })
       .populate("keyWord", "label", { $and: [{ status: "true" }] })
