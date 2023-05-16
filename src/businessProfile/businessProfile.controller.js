@@ -136,7 +136,7 @@ const getSearchBusinessProfile = async (req, res, next) => {
       )
     );
   if (search.length <= 2)
-    return next(ERROR(401, "please enter 3 more letters"));
+    return next(ERROR(401, "please enter at lest 3 letters"));
 
   const ids = [];
   const categorys = await CategoryModel.findOne({

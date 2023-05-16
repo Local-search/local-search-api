@@ -8,6 +8,8 @@ const keywordRoutes = require("./src/keyword/keyword.route");
 const reviewsRoutes = require("./src/review/review.routes");
 const userRoutes = require("./src/users/user.routes");
 const RefreshToken = require("./src/helper/refreshToken")
+const updateStatusRoutes = require("./src/updateStatus/updateStatus.routes")
+
 routes.get("/refreshToken", RefreshToken)
 routes.use("/auth", authRoutes);
 routes.use("/users", userRoutes);
@@ -17,4 +19,5 @@ routes.use("/ads", advertiseRoutes);
 routes.use("/catg", categoryRoutes);
 routes.use("/keyword", keywordRoutes);
 routes.use("/count", docCountRoutes);
+routes.use("/update-status", updateStatusRoutes)
 module.exports = routes;
