@@ -9,10 +9,10 @@ const UpdateStatus = async (req, res, next, model, query,) => {
     try {
         const updateStatus = await model.findByIdAndUpdate(id,
             {
-                $set: {query}
+                $set: { query }
             },
             { new: true }
-        )
+        ).select(query)
         cconsole.log(updateStatus)
         if (!updateStatus) {
             return next(ERROR(404, "there is no data with accosicate id to update!"));
@@ -24,29 +24,28 @@ const UpdateStatus = async (req, res, next, model, query,) => {
 }
 const businessStatus = async (req, res, next) => {
     const { status } = req.query
-    // const changeStatus = status === "false" ? "true" : "false"
-    // const query = { status: changeStatus }
-    // console.log("query",query)
-    // if (status) {
-    //     UpdateStatus(req, res, next, businessProfileModel, query)
-    // }
-    console.log("status", status)
-    const { id } = req.params
-
-    try {
-        const updateStatus = await businessProfileModel.findByIdAndUpdate(id,
-            {
-                $set: { status }
-            },
-            { new: true }
-        ).select("status")
-        console.log(updateStatus)
-        if (!updateStatus) {
-            return next(ERROR(404, "there is no data with accosicate id to update!"));
-        }
-        res.status(201).json(updateStatus);
-    } catch (err) {
-        next(err)
+    if (!status || status === undefined) {
+        next(ERROR(400, "status can only be true or false!!!"))
+    } else {
+        UpdateStatus(req, res, next, businessProfileModel, status)
     }
+    // console.log("status", status)
+    // const { id } = req.params
+
+    // try {
+    //     const updateStatus = await businessProfileModel.findByIdAndUpdate(id,
+    //         {
+    //             $set: { status }
+    //         },
+    //         { new: true }
+    //     ).select("status")
+    //     console.log(updateStatus)
+    //     if (!updateStatus) {
+    //         return next(ERROR(404, "there is no data with accosicate id to update!"));
+    //     }
+    //     res.status(201).json(updateStatus);
+    // } catch (err) {
+    //     next(err)
+    // }
 }
 module.exports = { businessStatus }
