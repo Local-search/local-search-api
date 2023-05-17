@@ -39,7 +39,7 @@ const businessStatus = async (req, res, next) => {
                 $set: { status }
             },
             { new: true }
-        )
+        ).select("status")
         console.log(updateStatus)
         if (!updateStatus) {
             return next(ERROR(404, "there is no data with accosicate id to update!"));
@@ -48,6 +48,5 @@ const businessStatus = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
-
 }
 module.exports = { businessStatus }
