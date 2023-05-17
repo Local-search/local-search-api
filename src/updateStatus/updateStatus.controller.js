@@ -9,7 +9,7 @@ const UpdateStatus = async (req, res, next, model, query,) => {
     try {
         const updateStatus = await model.findByIdAndUpdate(id,
             {
-                $set: [query]
+                $set: {query}
             },
             { new: true }
         )
