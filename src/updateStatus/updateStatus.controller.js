@@ -3,7 +3,7 @@ const keywordModel = require("../models/keyWord.model");
 const businessProfileModel = require("../models/businessProfile.model");
 const AdvertisementModel = require("../models/advertisement.model");
 const ERROR = require("../utils/Error")
-const UpdateStatus = async (req, res, next, model, query,) => {
+const UpdateStatus = async (req, res, next, model, update, query,) => {
     const { id } = req.params
 
     try {
@@ -12,7 +12,7 @@ const UpdateStatus = async (req, res, next, model, query,) => {
                 $set: { query }
             },
             { new: true }
-        ).select(query)
+        ).select(`${update}`)
         if (!updateStatus) {
             return next(ERROR(404, "there is no data with accosicate id to update!"));
         }
@@ -23,10 +23,11 @@ const UpdateStatus = async (req, res, next, model, query,) => {
 }
 const businessStatus = async (req, res, next) => {
     const { status } = req.query
+    const query = { status: status }
     if (!status || status === undefined) {
         next(ERROR(400, "status can only be true or false!!!"))
     } else {
-        UpdateStatus(req, res, next, businessProfileModel, status)
+        UpdateStatus(req, res, next, businessProfileModel, update = "status", query)
     }
     // console.log("status", status)
     // const { id } = req.params
