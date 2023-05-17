@@ -13,7 +13,6 @@ const UpdateStatus = async (req, res, next, model, query,) => {
             },
             { new: true }
         ).select(query)
-        cconsole.log(updateStatus)
         if (!updateStatus) {
             return next(ERROR(404, "there is no data with accosicate id to update!"));
         }
