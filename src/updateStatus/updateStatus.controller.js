@@ -64,18 +64,19 @@ const ImportantAds = async (req, res, next) => {
 const UpdateAdsStatus = async (req, res, next) => {
     const { status } = req.query
     const { id } = req.params
-    if (status !== "REJECTED" || status !== "PENDING" || status !== "APPROVED") {
-        return next(ERROR(404, "invalid status!! status can be either REJECTED, PENDING or APPROVED!"));
-    }
-    try {
-        const updatedStatus = await AdvertisementModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
-        if (!updatedStatus) {
-            return next(ERROR(404, "There is no data with an associated ID to update!"));
-        }
-        res.status(201).json(updatedStatus);
-    } catch (err) {
-        next(err)
+    if (status === "REJECTED" || status === "PENDING" || status === "APPROVED") {
+        try {
+            const updatedStatus = await AdvertisementModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
+            if (!updatedStatus) {
+                return next(ERROR(404, "There is no data with an associated ID to update!"));
+            }
+            res.status(201).json(updatedStatus);
+        } catch (err) {
+            next(err)
 
+        }
+    } else {
+        return next(ERROR(404, "invalid status!! status can be either REJECTED, PENDING or APPROVED!"));
     }
 }
 const UpdateIsActive = async (req, res, next) => {
