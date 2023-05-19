@@ -38,8 +38,8 @@ const businessStatus = async (req, res, next) => {
                 $set: { status }
             },
             { new: true }
-        ).select("status")
-        console.log(updateStatus)
+        ).select("status").lean()
+        // console.log(updateStatus)
         if (!updateStatus) {
             return next(ERROR(404, "there is no data with accosicate id to update!"));
         }
@@ -48,4 +48,53 @@ const businessStatus = async (req, res, next) => {
         next(err)
     }
 }
-module.exports = { businessStatus }
+const ImportantAds = async (req, res, next) => {
+    const { important } = req.query
+    const { id } = req.params
+    try {
+        const importantUpdate = await AdvertisementModel.findByIdAndUpdate(id, { $set: { important } }, { new: true }).select("important").lean()
+        if (!importantUpdate) {
+            return next(ERROR(404, "there is no data with accosicate id to update!"));
+        }
+        res.status(201).json(importantUpdate)
+    } catch (err) {
+        next(err)
+    }
+}
+const UpdateAdsStatus = async (req, res, next) => {
+    const { status } = req.query
+    const { id } = req.params
+    if (status !== "REJECTED" || status !== "PENDING" || status !== "APPROVED") {
+        return next(ERROR(404, "invalid status!! status can be either REJECTED, PENDING or APPROVED!"));
+    }
+    try {
+        const updatedStatus = await AdvertisementModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
+        if (!updatedStatus) {
+            return next(ERROR(404, "there is no data with accosicate id to update!"));
+        }
+        res.status(201).json(updatedStatus);
+    } catch (err) {
+        next(err)
+
+    }
+}
+const UpdateIsActive = async (req, res, next) => {
+    const { isActive } = req.query
+    const { id } = req.params
+
+    try {
+        const updateisActive = await businessProfileModel.findByIdAndUpdate(id,
+            {
+                $set: { isActive }
+            },
+            { new: true }
+        ).select("isActive").lean()
+        if (!updateisActive) {
+            return next(ERROR(404, "there is no data with accosicate id to update!"));
+        }
+        res.status(201).json(updateisActive);
+    } catch (err) {
+        next(err)
+    }
+}
+module.exports = { businessStatus, UpdateAdsStatus, UpdateIsActive, ImportantAds }
