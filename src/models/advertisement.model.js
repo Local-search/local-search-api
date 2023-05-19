@@ -21,7 +21,7 @@ const AdvertisementSchema = new mongoose.Schema(
     endDate: { type: Date, required: true, index: true },
     clicks: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
-    isActive: { type: Boolean, default: true, index: true },
+    isActive: { type: Boolean, default: false, index: true },
     catg: [
       {
         type: mongoose.Schema.Types.ObjectId,

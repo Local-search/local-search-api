@@ -14,7 +14,7 @@ const UpdateStatus = async (req, res, next, model, update, query,) => {
             { new: true }
         ).select(`${update}`)
         if (!updateStatus) {
-            return next(ERROR(404, "there is no data with accosicate id to update!"));
+            return next(ERROR(404, "There is no data with an associated ID to update!"));
         }
         res.status(201).json(updateStatus);
     } catch (err) {
@@ -41,7 +41,7 @@ const businessStatus = async (req, res, next) => {
         ).select("status").lean()
         // console.log(updateStatus)
         if (!updateStatus) {
-            return next(ERROR(404, "there is no data with accosicate id to update!"));
+            return next(ERROR(404, "There is no data with an associated ID to update!"));
         }
         res.status(201).json(updateStatus);
     } catch (err) {
@@ -54,7 +54,7 @@ const ImportantAds = async (req, res, next) => {
     try {
         const importantUpdate = await AdvertisementModel.findByIdAndUpdate(id, { $set: { important } }, { new: true }).select("important").lean()
         if (!importantUpdate) {
-            return next(ERROR(404, "there is no data with accosicate id to update!"));
+            return next(ERROR(404, "There is no data with an associated ID to update!"));
         }
         res.status(201).json(importantUpdate)
     } catch (err) {
@@ -62,7 +62,7 @@ const ImportantAds = async (req, res, next) => {
     }
 }
 const UpdateAdsStatus = async (req, res, next) => {
-    const { status } = req.query
+    const { status }  = req.query
     const { id } = req.params
     if (status !== "REJECTED" || status !== "PENDING" || status !== "APPROVED") {
         return next(ERROR(404, "invalid status!! status can be either REJECTED, PENDING or APPROVED!"));
@@ -70,7 +70,7 @@ const UpdateAdsStatus = async (req, res, next) => {
     try {
         const updatedStatus = await AdvertisementModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
         if (!updatedStatus) {
-            return next(ERROR(404, "there is no data with accosicate id to update!"));
+            return next(ERROR(404, "There is no data with an associated ID to update!"));
         }
         res.status(201).json(updatedStatus);
     } catch (err) {
@@ -90,7 +90,7 @@ const UpdateIsActive = async (req, res, next) => {
             { new: true }
         ).select("isActive").lean()
         // if (!updateisActive) {
-        //     return next(ERROR(404, "there is no data with accosicate id to update!"));
+        //     return next(ERROR(404, "There is no data with an associated ID to update!"));
         // }
         res.status(201).json(updateisActive);
     } catch (err) {
