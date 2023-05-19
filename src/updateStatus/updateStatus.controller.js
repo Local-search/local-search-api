@@ -85,13 +85,13 @@ const UpdateIsActive = async (req, res, next) => {
     try {
         const updateisActive = await businessProfileModel.findByIdAndUpdate(id,
             {
-                $set: { isActive }
+                $set: { isActive: isActive }
             },
             { new: true }
         ).select("isActive").lean()
-        if (!updateisActive) {
-            return next(ERROR(404, "there is no data with accosicate id to update!"));
-        }
+        // if (!updateisActive) {
+        //     return next(ERROR(404, "there is no data with accosicate id to update!"));
+        // }
         res.status(201).json(updateisActive);
     } catch (err) {
         next(err)
