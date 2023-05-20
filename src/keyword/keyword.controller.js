@@ -87,14 +87,29 @@ exports.updateKeyword = async (req, res, next) => {
 };
 
 exports.deleteKeyword = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) {
+    return next(ERROR(400, "keyword id is required!!"));
+  }
   try {
-    const keyword = await KeywordModel.findByIdAndDelete(req.params.id);
-    if (!keyword) {
-      return next(ERROR(404, "keyword not found"));
+    if (req.role === "ADMIN") {
+      const keyword = await KeywordModel.findByIdAndDelete(id);
+      if (!keyword) {
+        return next(ERROR(404, "keyword not found"));
+      }
+      res.status(200).json({ message: "keyword deleted!", });
+    } else {
+      const keyword = await KeywordModel.findOneAndDelete({
+        _id: id,
+        user: req.id
+      });
+      if (!keyword) {
+        return next(ERROR(404, "keyword not found"));
+      }
+      res.status(200).json({ message: "keyword deleted!", });
     }
-    res.status(204).send();
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 exports.mostPopularKeyword = async (req, res, next) => {

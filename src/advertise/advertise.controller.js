@@ -182,7 +182,7 @@ const updateAd = async (req, res, next) => {
 const deleteAd = async (req, res, next) => {
   const { id } = req.params;
   if (!id) {
-    return next(ERROR(400, "business id is required!!"));
+    return next(ERROR(400, "ads id is required!!"));
   }
   try {
     if (req.role === "ADMIN") {
