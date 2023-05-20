@@ -180,23 +180,34 @@ const updateAd = async (req, res, next) => {
 };
 
 const deleteAd = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) {
+    return next(ERROR(400, "business id is required!!"));
+  }
   try {
-    const advertisement = await AdvertisementModel.findById(req.params.id);
-    if (!advertisement) {
-      return next(ERROR(404, "Advertisement not found"));
-    }
-    if (advertisement.advertiser.toString() !== req.id) {
-      return next(ERROR(401, "Unauthorized"));
-    }
+    if (req.role === "ADMIN") {
+      const advertisement = await AdvertisementModel.findByIdAndDelete(id);
+      if (!advertisement) {
+        return next(ERROR(404, "Advertisement not found"));
+      }
+      res.status(200).json({ message: "Ads deleted!", });
+    } else {
 
-    const deletedAdvertisement = await AdvertisementModel.findByIdAndDelete({
-      _id: req.params.id,
-      advertiser: req.id,
-    });
-    if (!deletedAdvertisement) {
-      return next(ERROR(404, "Advertisement not found"));
+      if (advertisement.advertiser.toString() !== req.id) {
+        return next(ERROR(401, "Unauthorized"));
+      }
+
+      const deletedAdvertisement = await AdvertisementModel.findByIdAndDelete({
+        _id: id,
+        advertiser: req.id,
+      });
+
+      if (!deletedAdvertisement) {
+        return next(ERROR(404, "Advertisement not found"));
+      }
+      res.status(200).json({ message: "Business profile deleted!", });
+
     }
-    res.status(204).send();
   } catch (err) {
     next(err);
   }

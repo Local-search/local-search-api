@@ -324,7 +324,7 @@ const deleteBusinessProfileById = async (req, res, next) => {
       if (!businessProfile) {
         return next(ERROR(401, "Business profile not found"));
       }
-      res.status(200).json({ message: "Business profile deleted!", businessProfile });
+      res.status(200).json({ message: "Business profile deleted!", });
     } else {
       const businessProfile = await BusinessProfileModel.findOneAndDelete({
         _id: id,
@@ -333,7 +333,7 @@ const deleteBusinessProfileById = async (req, res, next) => {
       if (!businessProfile) {
         return next(ERROR(401, "Business profile not found"));
       }
-      res.status(200).json({ message: "Business profile deleted!", businessProfile });
+      res.status(200).json({ message: "Business profile deleted!", });
     }
   } catch (err) {
     next(err);
