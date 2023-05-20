@@ -24,18 +24,29 @@ exports.createCategory = async (req, res, next) => {
 
 exports.getCategories = async (req, res, next) => {
   try {
-    const categories = await CategoryModel.find();
+    const categories = await CategoryModel.find({
+      status: "true"
+    }).select("label").lean();
     if (!categories) return next(ERROR(404, "Category not found"));
 
-    res.json(categories);
+    res.status(200).json(categories);
   } catch (error) {
     next(error);
   }
 };
+exports.getAllCategories = async (req, res, next) => {
+  try {
+    const categories = await CategoryModel.find().lean();
+    if (!categories) return next(ERROR(404, "Category not found"));
 
+    res.status(200).json(categories);
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getCategoryById = async (req, res, next) => {
   try {
-    const category = await CategoryModel.findById(req.params.id).lern();
+    const category = await CategoryModel.findById(req.params.id).lean();
     if (!category) return next(ERROR(404, "Category not found"));
     res.json(category);
   } catch (error) {
