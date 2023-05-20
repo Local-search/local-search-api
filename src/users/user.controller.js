@@ -64,21 +64,28 @@ const getUser = async (req, res, next) => {
   }
 };
 const updateUser = async (req, res, next) => {
-  const { password } = req.body;
+  const { password, firstName, lastName, phone, email } = req.body;
   try {
-    const updateUser = await User.findByIdAndUpdate(
-      req.id,
-      {
-        $set: [{ password: password }],
-      },
-      { new: true }
-    ).select("fullName email phone status");
+    const user = await User.findById(req.id);
 
-    res.status(201).json({ updateUser });
+    if (user.email !== email) {
+      user.status = "false";
+    }
+
+    user.password = password;
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.phone = phone;
+    user.email = email;
+
+    const updatedUser = await user.save();
+    const { firstName, lastName, phone, email } = updateUser._doc
+    res.status(201).json({ message: "profile updated!!", updatedUser });
   } catch (err) {
     next(err);
   }
 };
+
 const deleteUser = async (req, res, next) => {
   const { id } = req.params;
 
