@@ -68,7 +68,7 @@ const updateUser = async (req, res, next) => {
   const { id } = req.params
   try {
     const user = await User.findById(id);
-    console.log("user",user)
+    console.log("user", user)
     if (!user) {
       return next(ERROR(404, "user not found!!"))
     }
@@ -86,13 +86,13 @@ const updateUser = async (req, res, next) => {
     if (user.phone !== phone) {
       user.phone = phone;
     }
-    if (password) {
-      user.password = password;
+    if (req.body.password) {
+      user.password = req.body.password;
     }
 
     const updatedUser = await user.save();
-    const { firstName, lastName, phone, email } = updateUser._doc
-    res.status(201).json({ message: "profile updated!!", updatedUser });
+    const { refreshToken, password, ...otherDetails } = updateUser._doc
+    res.status(201).json({ message: "profile updated!!", otherDetails });
   } catch (err) {
     next(err);
   }
