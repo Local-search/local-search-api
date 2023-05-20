@@ -92,7 +92,7 @@ const updateUser = async (req, res, next) => {
 
     const updatedUser = await user.save();
     const { refreshToken, password, ...otherDetails } = updateUser
-    res.status(201).json({ message: "profile updated!!", updatedUser });
+    res.status(201).json({ message: "profile updated!!", otherDetails });
   } catch (err) {
     next(err);
   }
