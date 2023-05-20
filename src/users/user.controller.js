@@ -85,7 +85,7 @@ const updateUser = async (req, res, next) => {
     if (user.phone !== phone) {
       user.phone = phone;
     }
-    if (req.body.password) {
+    if (password) {
       const salt = bcrypt.genSaltSync(5);
       const hash = bcrypt.hashSync(password, salt);
       user.password = hash;
