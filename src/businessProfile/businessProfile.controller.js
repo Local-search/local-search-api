@@ -333,7 +333,7 @@ const deleteBusinessProfileById = async (req, res, next) => {
     if (!businessProfile) {
       return next(ERROR(401, "Business profile not found"));
     }
-    res.status(204).json({ message: "Business profile deleted!" });
+    res.status(204).json({ message: "Business profile deleted!", businessProfile });
   } catch (err) {
     next(err);
   }
