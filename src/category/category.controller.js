@@ -47,8 +47,6 @@ exports.getAllCategories = async (req, res, next) => {
     const totalPages = Math.ceil(count / limit);
     const categories = await CategoryModel.find().skip((page - 1) * limit)
       .limit(limit)
-    if (!categories) return next(ERROR(404, "Category not found"));
-
     res.status(200).json({ result: categories, count, totalPages, page, limit });
   } catch (error) {
     next(error);

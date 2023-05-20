@@ -44,7 +44,6 @@ exports.getAllKeywords = async (req, res, next) => {
     const totalPages = Math.ceil(count / limit);
     const keywords = await KeywordModel.find().skip((page - 1) * limit)
       .limit(limit)
-    if (!keywords) return next(ERROR(404, "keyword not found"));
 
     res.status(200).json({ result: keywords, count, totalPages, page, limit });
   } catch (error) {
