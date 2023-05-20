@@ -193,10 +193,6 @@ const deleteAd = async (req, res, next) => {
       res.status(200).json({ message: "Ads deleted!", });
     } else {
 
-      if (advertisement.advertiser.toString() !== req.id) {
-        return next(ERROR(401, "Unauthorized"));
-      }
-
       const deletedAdvertisement = await AdvertisementModel.findByIdAndDelete({
         _id: id,
         advertiser: req.id,
@@ -205,8 +201,7 @@ const deleteAd = async (req, res, next) => {
       if (!deletedAdvertisement) {
         return next(ERROR(404, "Advertisement not found"));
       }
-      res.status(200).json({ message: "Business profile deleted!", });
-
+      res.status(200).json({ message: "Ads deleted!", });
     }
   } catch (err) {
     next(err);
