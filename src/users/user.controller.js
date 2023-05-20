@@ -24,7 +24,8 @@ const createUser = async (req, res, next) => {
       username,
       email,
       phone,
-      password: hash, role
+      password: hash, 
+      role
     };
     if (newObj) {
       const newUser = await User.create(newObj);
@@ -52,7 +53,7 @@ const getUsers = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   const id = req.id;
   try {
-    const user = await User.findById({ _id: id }).select("firstName lastName username phone email").lean();
+    const user = await User.findById({ _id: id }).select("firstName lastName username phone email").lean().exec();
     if (!user) {
       return next(ERROR(401, "User not found."));
     }
@@ -85,7 +86,9 @@ const updateUser = async (req, res, next) => {
       user.phone = phone;
     }
     if (req.body.password) {
-      user.password = req.body.password;
+      const salt = bcrypt.genSaltSync(5);
+      const hash = bcrypt.hashSync(password, salt);
+      user.password = hash;
     }
 
     await user.save();
