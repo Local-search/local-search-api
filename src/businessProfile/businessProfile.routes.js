@@ -1,4 +1,4 @@
-const { verifyUser, verifyJwt } = require("../auth/auth.middleware");
+const { verifyUser, verifyJwt, verifyAdmin } = require("../auth/auth.middleware");
 const {
   createBusinessProfile,
   getBusinessProfileById,
@@ -12,7 +12,7 @@ const {
 } = require("./businessProfile.controller");
 
 const businessProfileRoutes = require("express").Router();
-businessProfileRoutes.get("/all", getAllBusinessProfile);
+businessProfileRoutes.get("/all", verifyJwt, verifyAdmin, getAllBusinessProfile);
 businessProfileRoutes.get("/", getSearchBusinessProfile);
 businessProfileRoutes.get("/trending", TrendingBusiness);
 businessProfileRoutes.get("/keyword/:ids", getBusinessWithKeywordId);
