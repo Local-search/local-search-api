@@ -25,7 +25,7 @@ const RefreshToken = async (req, res, next) => {
             role: userFound.role,
           },
           JWT_SEC,
-          { expiresIn: "15s" }
+          { expiresIn: "1m" }
         );
         res.status(201).json({ accessToken });
 
