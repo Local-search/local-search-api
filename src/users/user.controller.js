@@ -68,15 +68,14 @@ const updateUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.id);
 
-    if (user.email !== email) {
-      user.status = "false";
+    if (user?.email !== email) {
+      user?.status = "false";
     }
-
-    user.password = password;
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.phone = phone;
-    user.email = email;
+    user?.password = password;
+    user?.firstName = firstName;
+    user?.lastName = lastName;
+    user?.phone = phone;
+    user?.email = email;
 
     const updatedUser = await user.save();
     const { firstName, lastName, phone, email } = updateUser._doc
