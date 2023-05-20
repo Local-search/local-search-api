@@ -314,19 +314,26 @@ const updateBusinessProfileById = async (req, res, next) => {
 };
 
 const deleteBusinessProfileById = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   if (!id) {
-    return next(ERROR(400, "user id not found"));
+    return next(ERROR(400, "business id is required!!"));
   }
   try {
-    const businessProfile = await BusinessProfileModel.findOneAndDelete({
-      _id: req.params.id,
-      "formFillerInfo.userId": req.id,
-    });
-    if (!businessProfile) {
-      return next(ERROR(401, "you are not authorized to do that"));
+    let query
+    if (req.role !== "ADMIN") {
+      query = {
+        _id: id,
+        "formFillerInfo.userId": req.id,
+      }
+    } else {
+      query = id
     }
-    res.status(204).send();
+
+    const businessProfile = await BusinessProfileModel.findOneAndDelete(query);
+    if (!businessProfile) {
+      return next(ERROR(401, "Business profile not found"));
+    }
+    res.status(204).json({ message: "Business profile deleted!" });
   } catch (err) {
     next(err);
   }
