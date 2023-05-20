@@ -90,14 +90,29 @@ exports.updateCategory = async (req, res, next) => {
 };
 
 exports.deleteCategory = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) {
+    return next(ERROR(400, "business id is required!!"));
+  }
   try {
-    const category = await CategoryModel.findByIdAndDelete(req.params.id);
-    if (!category) {
-      return next(ERROR(404, "Category not found"));
+    if (req.role === "ADMIN") {
+      const category = await CategoryModel.findByIdAndDelete(id);
+      if (!category) {
+        return next(ERROR(404, "Category not found"));
+      }
+      res.status(200).json({ message: "category deleted!", });
+    } else {
+      const category = await CategoryModel.findOneAndDelete({
+        _id: id,
+        user: req.id
+      });
+      if (!category) {
+        return next(ERROR(404, "Category not found"));
+      }
+      res.status(200).json({ message: "category deleted!", });
     }
-    res.status(204).send();
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 exports.mostPopularCatg = async (req, res, next) => {

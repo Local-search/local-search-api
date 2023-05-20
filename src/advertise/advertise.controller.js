@@ -193,7 +193,7 @@ const deleteAd = async (req, res, next) => {
       res.status(200).json({ message: "Ads deleted!", });
     } else {
 
-      const deletedAdvertisement = await AdvertisementModel.findByIdAndDelete({
+      const deletedAdvertisement = await AdvertisementModel.findOneAndDelete({
         _id: id,
         advertiser: req.id,
       });
