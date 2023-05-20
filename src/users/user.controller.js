@@ -91,7 +91,7 @@ const updateUser = async (req, res, next) => {
     }
 
     const updatedUser = await user.save();
-    // const { refreshToken, password, ...otherDetails } = updateUser._doc
+    const { refreshToken, password, ...otherDetails } = updateUser
     res.status(201).json({ message: "profile updated!!", updatedUser });
   } catch (err) {
     next(err);
