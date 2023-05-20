@@ -17,9 +17,9 @@ const categoryRoutes = require("express").Router();
 
 categoryRoutes.get("/popular", mostPopularCatg);
 categoryRoutes.use(verifyJwt);
-categoryRoutes.post("/", verifyUser, createCategory);
 categoryRoutes.get("/all", verifyAdmin, getAllCategories);
 categoryRoutes.get("/", verifyUser, getCategories);
+categoryRoutes.post("/", verifyAdmin, createCategory);
 categoryRoutes.get("/:id", getCategoryById);
 categoryRoutes.use(verifyAdmin);
 categoryRoutes.put("/:id", updateCategory);

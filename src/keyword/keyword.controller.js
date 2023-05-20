@@ -10,11 +10,11 @@ exports.createKeyword = async (req, res, next) => {
     if (req.role === "ADMIN") {
       const keyword = new KeywordModel({ label, status });
       await keyword.save();
-      res.status(201).json({ keyword });
+      res.status(201).json({ message: "New keyword Created successfully!!" });
     } else {
       const keyword = new KeywordModel({ label });
       await keyword.save();
-      res.status(201).json({ keyword });
+      res.status(201).json({ message: "New keyword Created successfully!!" });
     }
   } catch (error) {
     next(error);
