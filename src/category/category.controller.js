@@ -6,21 +6,24 @@ exports.createCategory = async (req, res, next) => {
   try {
     const { label, status } = req.body;
     if (!label) {
-      return next(ERROR(401, "enter category name"));
+      return next(ERROR(401, "Enter category name"));
     }
-    if (req.role === "ADMIN") {
-      const category = new CategoryModel({ label, status });
-      await category.save();
-      res.status(201).json({ message: "New caterory Created successfully!!" });
-    } else {
-      const category = new CategoryModel({ label });
-      await category.save();
-      res.status(201).json({ message: "New caterory Created successfully!!" });
+
+    const existingCategory = await CategoryModel.findOne({ label });
+    if (existingCategory) {
+      return next(ERROR(409, "Category label already exists"));
     }
+    const category = new CategoryModel({ label, status });
+    if (req.role !== "ADMIN") {
+      category.status = "false"
+    }
+    await category.save();
+    res.status(201).json({ message: "New category created successfully!!" });
   } catch (error) {
     next(error);
   }
 };
+
 
 exports.getCategories = async (req, res, next) => {
   try {
