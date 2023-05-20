@@ -320,9 +320,7 @@ const deleteBusinessProfileById = async (req, res, next) => {
   }
   try {
     if (req.role === "ADMIN") {
-      const businessProfile = await BusinessProfileModel.findByIdAndDelete({
-        _id: id,
-      });
+      const businessProfile = await BusinessProfileModel.findByIdAndDelete(id);
       if (!businessProfile) {
         return next(ERROR(401, "Business profile not found"));
       }
