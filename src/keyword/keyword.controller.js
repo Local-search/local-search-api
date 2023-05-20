@@ -5,17 +5,19 @@ exports.createKeyword = async (req, res, next) => {
   try {
     const { label, status } = req.body;
     if (!label) {
-      return next(ERROR(401, "enter keyword name"));
+      return next(ERROR(401, "Enter Keyword name"));
     }
-    if (req.role === "ADMIN") {
-      const keyword = new KeywordModel({ label, status });
-      await keyword.save();
-      res.status(201).json({ message: "New keyword Created successfully!!" });
-    } else {
-      const keyword = new KeywordModel({ label });
-      await keyword.save();
-      res.status(201).json({ message: "New keyword Created successfully!!" });
+
+    const existingKeyword = await KeywordModel.findOne({ label });
+    if (existingKeyword) {
+      return next(ERROR(409, "Keyword already exists"));
     }
+    const keyword = new KeywordModel({ label, status });
+    if (req.role !== "ADMIN") {
+      keyword.status = "false"
+    }
+    await category.save();
+    res.status(201).json({ message: "New keyword Created successfully!!" });
   } catch (error) {
     next(error);
   }

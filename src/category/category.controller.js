@@ -11,7 +11,7 @@ exports.createCategory = async (req, res, next) => {
 
     const existingCategory = await CategoryModel.findOne({ label });
     if (existingCategory) {
-      return next(ERROR(409, "Category label already exists"));
+      return next(ERROR(409, "Category already exists"));
     }
     const category = new CategoryModel({ label, status });
     if (req.role !== "ADMIN") {
