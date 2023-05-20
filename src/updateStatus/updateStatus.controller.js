@@ -98,4 +98,32 @@ const UpdateIsActive = async (req, res, next) => {
         next(err)
     }
 }
-module.exports = { businessStatus, UpdateAdsStatus, UpdateIsActive, ImportantAds }
+const UpdateCatgStatus = async (req, res, next) => {
+    const { status } = req.query
+    const { id } = req.params
+    try {
+        const updatedStatus = await categoryModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
+        if (!updatedStatus) {
+            return next(ERROR(404, "There is no data with an associated ID to update!"));
+        }
+        res.status(201).json(updatedStatus);
+    } catch (err) {
+        next(err)
+
+    }
+}
+const UpdateKeywordStatus = async (req, res, next) => {
+    const { status } = req.query
+    const { id } = req.params
+    try {
+        const updatedStatus = await keywordModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
+        if (!updatedStatus) {
+            return next(ERROR(404, "There is no data with an associated ID to update!"));
+        }
+        res.status(201).json(updatedStatus);
+    } catch (err) {
+        next(err)
+
+    }
+}
+module.exports = { UpdateKeywordStatus, UpdateCatgStatus, businessStatus, UpdateAdsStatus, UpdateIsActive, ImportantAds }

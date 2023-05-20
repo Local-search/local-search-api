@@ -23,7 +23,7 @@ exports.createKeyword = async (req, res, next) => {
 
 exports.getKeywords = async (req, res, next) => {
   try {
-    const keywords = await KeywordModel.find();
+    const keywords = await KeywordModel.find({ status: "true" }).select("label").lean();
     if (!keywords) return next(ERROR(404, "keyword not found"));
 
     res.json(keywords);
@@ -31,7 +31,26 @@ exports.getKeywords = async (req, res, next) => {
     next(error);
   }
 };
+exports.getAllKeywords = async (req, res, next) => {
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  // console.log('1', limit)
 
+  if (isNaN(page) || isNaN(limit)) {
+    return next(ERROR(400, "Invalid page or limit value"));
+  }
+  try {
+    const count = await KeywordModel.countDocuments();
+    const totalPages = Math.ceil(count / limit);
+    const keywords = await KeywordModel.find().skip((page - 1) * limit)
+      .limit(limit)
+    if (!keywords) return next(ERROR(404, "keyword not found"));
+
+    res.status(200).json({ result: keywords, count, totalPages, page, limit });
+  } catch (error) {
+    next(error);
+  }
+}
 exports.getKeywordById = async (req, res, next) => {
   try {
     const keyword = await KeywordModel.findById(req.params.id);

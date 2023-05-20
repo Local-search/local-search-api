@@ -35,11 +35,21 @@ exports.getCategories = async (req, res, next) => {
   }
 };
 exports.getAllCategories = async (req, res, next) => {
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  // console.log('1', limit)
+
+  if (isNaN(page) || isNaN(limit)) {
+    return next(ERROR(400, "Invalid page or limit value"));
+  }
   try {
-    const categories = await CategoryModel.find().lean();
+    const count = await CategoryModel.countDocuments();
+    const totalPages = Math.ceil(count / limit);
+    const categories = await CategoryModel.find().skip((page - 1) * limit)
+      .limit(limit)
     if (!categories) return next(ERROR(404, "Category not found"));
 
-    res.status(200).json(categories);
+    res.status(200).json({ result: categories, count, totalPages, page, limit });
   } catch (error) {
     next(error);
   }
