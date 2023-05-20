@@ -65,7 +65,7 @@ const getUser = async (req, res, next) => {
 };
 const updateUser = async (req, res, next) => {
   const { password, firstName, lastName, phone, email } = req.body;
-  const { id } = rea.params
+  const { id } = req.params
   try {
     const user = await User.findById(id);
     if (!user) {
