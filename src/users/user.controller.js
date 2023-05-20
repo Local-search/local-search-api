@@ -71,14 +71,23 @@ const updateUser = async (req, res, next) => {
     if (!user) {
       return next(ERROR(404, "user not found!!"))
     }
-    if (user?.email !== email) {
-      user?.status = "false";
+    if (user.email !== email) {
+      user.status = "false";
+      user.email = email;
     }
-    user?.password = password;
-    user?.firstName = firstName;
-    user?.lastName = lastName;
-    user?.phone = phone;
-    user?.email = email;
+    if (user.firstName !== firstName) {
+      user.firstName = firstName;
+    }
+    if (user.lastName !== lastName) {
+
+      user.lastName = lastName;
+    }
+    if (user.phone !== phone) {
+      user.phone = phone;
+    }
+    if (password) {
+      user.password = password;
+    }
 
     const updatedUser = await user.save();
     const { firstName, lastName, phone, email } = updateUser._doc
