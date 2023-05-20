@@ -319,21 +319,24 @@ const deleteBusinessProfileById = async (req, res, next) => {
     return next(ERROR(400, "business id is required!!"));
   }
   try {
-    let query
-    if (req.role !== "ADMIN") {
-      query = {
+    if (req.role === "ADMIN") {
+      const businessProfile = await BusinessProfileModel.findByIdAndDelete({
+        _id: id,
+      });
+      if (!businessProfile) {
+        return next(ERROR(401, "Business profile not found"));
+      }
+      res.status(204).json({ message: "Business profile deleted!", businessProfile });
+    } else {
+      const businessProfile = await BusinessProfileModel.findOneAndDelete({
         _id: id,
         "formFillerInfo.userId": req.id,
+      });
+      if (!businessProfile) {
+        return next(ERROR(401, "Business profile not found"));
       }
-    } else {
-      query = id
+      res.status(204).json({ message: "Business profile deleted!", businessProfile });
     }
-
-    const businessProfile = await BusinessProfileModel.findOneAndDelete(query);
-    if (!businessProfile) {
-      return next(ERROR(401, "Business profile not found"));
-    }
-    res.status(204).json({ message: "Business profile deleted!", businessProfile });
   } catch (err) {
     next(err);
   }
