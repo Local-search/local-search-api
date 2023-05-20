@@ -68,6 +68,7 @@ const updateUser = async (req, res, next) => {
   const { id } = req.params
   try {
     const user = await User.findById(id);
+    console.log("user",user)
     if (!user) {
       return next(ERROR(404, "user not found!!"))
     }
