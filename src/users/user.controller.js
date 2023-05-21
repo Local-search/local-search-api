@@ -24,7 +24,7 @@ const createUser = async (req, res, next) => {
       username,
       email,
       phone,
-      password: hash, 
+      password: hash,
       role
     };
     if (newObj) {
@@ -42,9 +42,19 @@ const createUser = async (req, res, next) => {
 };
 
 const getUsers = async (req, res, next) => {
+  let page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 10;
+  // console.log('1', limit)
+
+  if (isNaN(page) || isNaN(limit)) {
+    return next(ERROR(400, "Invalid page or limit value"));
+  }
   try {
-    const users = await User.find().select("-password").lean();
-    res.status(200).json(users);
+    const count = await CategoryModel.countDocuments();
+    const totalPages = Math.ceil(count / limit);
+    const users = await User.find().select("-password, -refreshToken").skip((page - 1) * limit)
+      .limit(limit).lean();
+    res.status(200).json({ result: users, count, totalPages, page, limit });
   } catch (err) {
     next(err);
   }
@@ -53,7 +63,7 @@ const getUsers = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   const id = req.id;
   try {
-    const user = await User.findById({ _id: id }).select("firstName lastName username phone email").lean().exec();
+    const user = await User.findById({ _id: id }).select("firstName lastName username phone email").lean();
     if (!user) {
       return next(ERROR(401, "User not found."));
     }
