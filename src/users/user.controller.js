@@ -61,7 +61,7 @@ const getUsers = async (req, res, next) => {
 };
 
 const getUser = async (req, res, next) => {
-  const {id} = req.params
+  const { id } = req.params
   try {
     const user = await User.findById(id).select("firstName lastName username phone email status").lean();
     if (!user) {
@@ -75,7 +75,7 @@ const getUser = async (req, res, next) => {
   }
 };
 const updateUser = async (req, res, next) => {
-  const { password, firstName, lastName, phone, email } = req.body;
+  const { password, firstName, lastName, phone, email, image } = req.body;
   const { id } = req.params;
   try {
     const user = await User.findById(id);
@@ -94,6 +94,8 @@ const updateUser = async (req, res, next) => {
     }
     if (user.phone !== phone) {
       user.phone = phone;
+    } if (user.image !== image) {
+      user.image = image
     }
     if (password) {
       const salt = bcrypt.genSaltSync(5);
