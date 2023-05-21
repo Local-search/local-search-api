@@ -15,11 +15,13 @@ const {
 const userRoutes = require("express").Router();
 
 userRoutes.use(verifyJwt);
-userRoutes.get("/:id", verifyIsSameUser, getUser);
-userRoutes.delete("/:id", verifyIsSameUser, deleteUser);
-userRoutes.put("/:id", verifyIsSameUser, updateUser);
-userRoutes.use(verifyAdmin);
-userRoutes.get("/", getUsers);
-userRoutes.post("/", createUser);
+userRoutes.get("/", verifyAdmin, getUsers);
+userRoutes.post("/", verifyAdmin, createUser);
+
+userRoutes.use(verifyIsSameUser);
+userRoutes.get("/:id", getUser);
+userRoutes.delete("/:id", deleteUser);
+userRoutes.put("/:id", updateUser);
+
 
 module.exports = userRoutes;
