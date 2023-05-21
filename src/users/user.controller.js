@@ -50,7 +50,7 @@ const getUsers = async (req, res, next) => {
     return next(ERROR(400, "Invalid page or limit value"));
   }
   try {
-    const count = await CategoryModel.countDocuments();
+    const count = await User.countDocuments();
     const totalPages = Math.ceil(count / limit);
     const users = await User.find().select("-password, -refreshToken").skip((page - 1) * limit)
       .limit(limit).lean();
