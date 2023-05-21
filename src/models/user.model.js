@@ -52,7 +52,12 @@ const UserSchema = new mongoose.Schema(
       enum: ["true", "false"],
       default: "false",
     },
+    image: {
+      type: String,
+      max: 500
+    }
   },
+
   {
     timestamps: true,
   }
