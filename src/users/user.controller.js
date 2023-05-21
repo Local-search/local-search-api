@@ -52,7 +52,7 @@ const getUsers = async (req, res, next) => {
   try {
     const count = await User.countDocuments();
     const totalPages = Math.ceil(count / limit);
-    const users = await User.find().select("-password, -refreshToken").skip((page - 1) * limit)
+    const users = await User.find().select("-password -refreshToken").skip((page - 1) * limit)
       .limit(limit).lean();
     res.status(200).json({ result: users, count, totalPages, page, limit });
   } catch (err) {
@@ -61,9 +61,9 @@ const getUsers = async (req, res, next) => {
 };
 
 const getUser = async (req, res, next) => {
-  const id = req.id;
+  const id = req.params
   try {
-    const user = await User.findById({ _id: id }).select("firstName lastName username phone email").lean();
+    const user = await User.findById(id).select("firstName lastName username phone email").lean();
     if (!user) {
       return next(ERROR(401, "User not found."));
     }
