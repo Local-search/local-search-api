@@ -61,7 +61,7 @@ const getUsers = async (req, res, next) => {
 };
 
 const getUser = async (req, res, next) => {
-  const id = req.params
+  const {id} = req.params
   try {
     const user = await User.findById(id).select("firstName lastName username phone email").lean();
     if (!user) {
