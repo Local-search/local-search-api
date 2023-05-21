@@ -122,6 +122,7 @@ const login = async (req, res, next) => {
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
         const username = result.username;
+        const image = result.image
 
         res
           .cookie("jwt", refreshToken, {
@@ -134,6 +135,7 @@ const login = async (req, res, next) => {
           .json({
             message: `welcome Back ${username}`,
             username,
+            image,
             accessToken,
           });
       }
