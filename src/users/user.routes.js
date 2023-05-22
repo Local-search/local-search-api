@@ -18,9 +18,8 @@ userRoutes.use(verifyJwt);
 userRoutes.get("/all", verifyAdmin, getUsers);
 userRoutes.post("/", verifyAdmin, createUser);
 
-userRoutes.use(verifyIsSameUser);
-userRoutes.get("/:id", getUser);
-userRoutes.delete("/:id", deleteUser);
-userRoutes.put("/:id", updateUser);
+userRoutes.get("/:id", verifyIsSameUser, getUser);
+userRoutes.delete("/:id", verifyIsSameUser, deleteUser);
+userRoutes.put("/:id", verifyIsSameUser, updateUser);
 
 module.exports = userRoutes;
