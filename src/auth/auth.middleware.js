@@ -39,7 +39,7 @@ const verifyUser = (req, res, next) => {
 const verifyIsSameUser = (req, res, next) => {
   verifyJwt(req, res, () => {
     // const checkId = req.param.id || req.body.id;
-    if ((req.id === req.params.id && req.role === "USER") || req.role === "ADMIN") {
+    if (req.id === req.params.id || req.role === "ADMIN") {
       next();
     } else {
       return next(ERROR(401, "You are not authorized to do this action!!"));
