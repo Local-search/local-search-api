@@ -24,8 +24,8 @@ const createBusinessProfile = async (req, res, next) => {
         message: formFillerInfo?.message,
       },
     });
-    await businessProfile.save();
-    res.status(201).json(businessProfile);
+    const newBusiness = await businessProfile.save();
+    res.status(201).json({ newBusiness, formData: businessProfile });
   } catch (err) {
     next(err);
   }
