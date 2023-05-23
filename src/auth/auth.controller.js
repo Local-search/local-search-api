@@ -7,7 +7,8 @@ const User = require("../models/user.model");
 const TokenModel = require("../models/token");
 const sendEmail = require("../helper/sendEmail");
 const ERROR = require("../utils/Error");
-const sendOTPEmail = require("../helper/sendEmail");
+const PasswordUtils = require("../utils/PasswordUtils");
+const sendOTPEmail = require("../users/emailTemplate/sendOtpEmail");
 
 const register = async (req, res, next) => {
   const { firstName, lastName, username, email, phone, password } = req.body;
@@ -45,16 +46,16 @@ const register = async (req, res, next) => {
     }
 
     if (!userFound) {
-      const salt = bcrypt.genSaltSync(5);
-      const hash = bcrypt.hashSync(password, salt);
-
+      // const salt = bcrypt.genSaltSync(5);
+      // const hashedPassword = bcrypt.hashSync(password, salt);
+      const hashedPassword =  PasswordUtils.generateHash(password);
       const createUser = new User({
         firstName,
         lastName,
         username,
         email,
         phone,
-        password: hash,
+        password: hashedPassword,
       });
       await createUser.save();
 
@@ -102,13 +103,13 @@ const login = async (req, res, next) => {
     }
 
     if (userFound) {
-      const matchPassword = await bcrypt.compare(password, userFound.password);
-
-      if (!matchPassword) {
+      // const isMatch = await bcrypt.compare(password, userFound.password);
+      const isMatch = PasswordUtils.comparePasswords(password, userFound.password);
+      if (!isMatch) {
         return next(ERROR(401, "Wrong credentials!"));
       }
 
-      if (matchPassword) {
+      if (isMatch) {
         const accessToken = jwt.sign(
           {
             id: userFound._id,

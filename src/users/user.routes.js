@@ -21,5 +21,4 @@ userRoutes.post("/", verifyAdmin, createUser);
 userRoutes.get("/:id", verifyIsSameUser, getUser);
 userRoutes.delete("/:id", verifyIsSameUser, deleteUser);
 userRoutes.put("/:id", verifyIsSameUser, updateUser);
-
 module.exports = userRoutes;

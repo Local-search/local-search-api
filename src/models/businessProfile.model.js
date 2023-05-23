@@ -133,11 +133,11 @@ const businessProfileSchema = new mongoose.Schema(
     ],
     rating: {
       type: Number,
-      default: 2.5,
+      default: 0,
     },
     totalReviews: {
       type: Number,
-      default: 2,
+      default: 0,
     },
     status: {
       type: String,
@@ -149,7 +149,7 @@ const businessProfileSchema = new mongoose.Schema(
     },
     popular: {
       type: Number,
-      default: 5,
+      default: 0,
     },
   },
   {

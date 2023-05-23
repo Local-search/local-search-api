@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: "email is required",
+      required: [true, "email is required"],
       unique: true,
       match: [
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -38,11 +38,11 @@ const UserSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: "password is required",
-      // match: [
-      //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,50}$/,
-      //   "At least 8 characters.Must have uppercase & lowercase letters, number and a special character: ! @ # $ %",
-      // ],
+      required: [true, 'Password is required'],
+      match: [
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        'Password must have at least 8 characters, including at least one lowercase letter, one uppercase letter, one digit, and one special character (@ $ ! % * ? &)',
+      ],
     },
     refreshToken: {
       type: String,
@@ -55,9 +55,14 @@ const UserSchema = new mongoose.Schema(
     image: {
       type: String,
       max: 500
+    },
+    resetToken: {
+      type: String,
+    },
+    resetTokenExpiresAt: {
+      type: Date
     }
   },
-
   {
     timestamps: true,
   }

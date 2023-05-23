@@ -8,9 +8,12 @@ const keywordRoutes = require("./src/keyword/keyword.route");
 const reviewsRoutes = require("./src/review/review.routes");
 const userRoutes = require("./src/users/user.routes");
 const RefreshToken = require("./src/helper/refreshToken")
-const updateStatusRoutes = require("./src/updateStatus/updateStatus.routes")
+const updateStatusRoutes = require("./src/updateStatus/updateStatus.routes");
+const { forgotPassword, resetUserPassword } = require("./src/users/user.controller");
 
 routes.get("/refreshToken", RefreshToken)
+routes.post("/forgot-password", forgotPassword)
+routes.post("/reset-password", resetUserPassword)
 routes.use("/auth", authRoutes);
 routes.use("/users", userRoutes);
 routes.use("/review", reviewsRoutes);
