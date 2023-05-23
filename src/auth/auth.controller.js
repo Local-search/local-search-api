@@ -1,38 +1,41 @@
-const ERROR = require("../utils/Error");
-const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { REFRESH_SEC, JWT_SEC } = require("../config/secrets");
-const sendEMail = require("../helper/sendEmail");
-const TokenModel = require("../models/token");
 const crypto = require("crypto");
+
+const User = require("../models/user.model");
+const TokenModel = require("../models/token");
+const sendEmail = require("../helper/sendEmail");
+const ERROR = require("../utils/Error");
+const sendOTPEmail = require("../helper/sendEmail");
+
 const register = async (req, res, next) => {
   const { firstName, lastName, username, email, phone, password } = req.body;
 
   if (!username) {
-    return next(ERROR(400, "Choose username name!!!"));
+    return next(ERROR(400, "Choose a username!"));
   }
   if (!firstName) {
-    return next(ERROR(400, "enter your First name!!!"));
+    return next(ERROR(400, "Enter your first name!"));
   }
   if (!lastName) {
-    return next(ERROR(400, "enter your Last name!!!"));
+    return next(ERROR(400, "Enter your last name!"));
   }
   if (!email) {
-    return next(ERROR(400, "email is required!!!"));
+    return next(ERROR(400, "Email is required!"));
   }
   if (!phone) {
-    return next(ERROR(400, "enter your Phone Number!!!"));
+    return next(ERROR(400, "Enter your phone number!"));
   }
   if (!password) {
-    return next(ERROR(400, "enter strong password!!!"));
+    return next(ERROR(400, "Enter a strong password!"));
   }
+
   try {
-    const userFound = await User.findOne({
-      $or: [{ email }, { phone }],
-    });
+    const userFound = await User.findOne({ $or: [{ email }, { phone }] });
+
     if (userFound?.username === username) {
-      return next(ERROR(409, `${username} username is already Taken!`));
+      return next(ERROR(409, `${username} username is already taken!`));
     }
     if (userFound?.email === email) {
       return next(ERROR(409, "Email is already registered!"));
@@ -40,9 +43,11 @@ const register = async (req, res, next) => {
     if (userFound?.phone === phone) {
       return next(ERROR(409, "Phone number is already registered!"));
     }
+
     if (!userFound) {
       const salt = bcrypt.genSaltSync(5);
       const hash = bcrypt.hashSync(password, salt);
+
       const createUser = new User({
         firstName,
         lastName,
@@ -52,51 +57,57 @@ const register = async (req, res, next) => {
         password: hash,
       });
       await createUser.save();
+
       res.status(201).json({
-        message: " 🎇 🎇 🎉 Account created successfully!",
+        message: "Account created successfully!",
       });
     }
   } catch (err) {
     next(err);
   }
 };
+
 const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email) {
-    return next(ERROR(400, "enter your email!!"));
+    return next(ERROR(400, "Enter your email!"));
   }
   if (!password) {
-    return next(ERROR(400, "enter your password!!"));
+    return next(ERROR(400, "Enter your password!"));
   }
+
   try {
     const userFound = await User.findOne({ email });
+
     if (!userFound) {
-      return next(ERROR(400, "Wrong Credentials!!!"));
+      return next(ERROR(400, "Wrong credentials!"));
     }
+
     if (userFound.status === "false") {
-      const email = userFound.email;
-      const length = 6;
-      const verificationCode = crypto
-        .randomBytes(Math.ceil(length / 2))
-        .toString("hex")
-        .slice(0, length);
+      const otp = await sendOTPEmail(next, email);
 
       const saveToken = new TokenModel({
         user: userFound._id,
-        token: verificationCode,
+        token: otp,
       });
       await saveToken.save();
-      await sendEMail(next, verificationCode, email);
-      return next(ERROR(307,
-        `${userFound._id} A verification code has been sent to your email. Please check your inbox `
-      ));
+
+      return next(
+        ERROR(
+          307,
+          `${userFound._id} A verification code has been sent to your email. Please check your inbox.`
+        )
+      );
     }
+
     if (userFound) {
       const matchPassword = await bcrypt.compare(password, userFound.password);
+
       if (!matchPassword) {
-        return next(ERROR(401, "Wrong Credentials!!!"));
+        return next(ERROR(401, "Wrong credentials!"));
       }
+
       if (matchPassword) {
         const accessToken = jwt.sign(
           {
@@ -119,10 +130,10 @@ const login = async (req, res, next) => {
           REFRESH_SEC,
           { expiresIn: "5m" }
         );
+
         userFound.refreshToken = refreshToken;
         const result = await userFound.save();
-        const username = result.username;
-        const image = result.image
+        const { username, image } = result;
 
         res
           .cookie("jwt", refreshToken, {
@@ -133,7 +144,7 @@ const login = async (req, res, next) => {
           })
           .status(200)
           .json({
-            message: `welcome Back ${username}`,
+            message: `Welcome back ${username}`,
             username,
             image,
             accessToken,
@@ -144,21 +155,34 @@ const login = async (req, res, next) => {
     next(err);
   }
 };
+
 const verifyOtp = async (req, res, next) => {
   const { id, otp } = req.body;
-  if (!id) return next(ERROR(400, "id not found!"));
-  if (!otp) return next(ERROR(400, "enter you verification code!"));
+
+  if (!id) {
+    return next(ERROR(400, "ID not found!"));
+  }
+  if (!otp) {
+    return next(ERROR(400, "Enter your verification code!"));
+  }
+
   try {
     const isUserIdFound = await TokenModel.findOne({ user: id });
-    // console.log(isUserIdFound);
-    if (!isUserIdFound) return next(ERROR(404, "user not found"));
-    if (isUserIdFound.token !== otp) return next(ERROR(409, "invalid OTP"));
+
+    if (!isUserIdFound) {
+      return next(ERROR(404, "User not found!"));
+    }
+    if (isUserIdFound.token !== otp) {
+      return next(ERROR(409, "Invalid OTP!"));
+    }
     if (isUserIdFound.token === otp) {
       await User.findByIdAndUpdate(id, { status: "true" });
     }
-    res.status(200).json({ message: "Account Verifyed successfully!" });
+
+    res.status(200).json({ message: "Account verified successfully!" });
   } catch (err) {
     next(err);
   }
 };
+
 module.exports = { register, login, verifyOtp };

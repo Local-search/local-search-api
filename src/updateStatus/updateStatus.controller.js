@@ -3,51 +3,31 @@ const keywordModel = require("../models/keyWord.model");
 const businessProfileModel = require("../models/businessProfile.model");
 const AdvertisementModel = require("../models/advertisement.model");
 const ERROR = require("../utils/Error")
-const UpdateStatus = async (req, res, next, model, update, query,) => {
-    const { id } = req.params
 
+const updateModelStatus = async (Model, id, updateField, res, next) => {
     try {
-        const updateStatus = await model.findByIdAndUpdate(id,
-            {
-                $set: { query }
-            },
+        const updatedStatus = await Model.findByIdAndUpdate(
+            id,
+            { $set: { status: updateField } },
             { new: true }
-        ).select(`${update}`)
-        if (!updateStatus) {
+        ).select("status").lean();
+
+        if (!updatedStatus) {
             return next(ERROR(404, "There is no data with an associated ID to update!"));
         }
-        res.status(201).json(updateStatus);
+
+        res.status(201).json(updatedStatus);
     } catch (err) {
-        next(err)
+        next(err);
     }
-}
+};
+
 const businessStatus = async (req, res, next) => {
-    const { status } = req.query
-    // const query = { status: status }
-    // if (!status || status === undefined) {
-    //     next(ERROR(400, "status can only be true or false!!!"))
-    // } else {
-    //     UpdateStatus(req, res, next, businessProfileModel, update = "status", query)
-    // }
-    // console.log("status", status)
-    const { id } = req.params
+    const { status } = req.query;
+    const { id } = req.params;
 
-    try {
-        const updateStatus = await businessProfileModel.findByIdAndUpdate(id,
-            {
-                $set: { status }
-            },
-            { new: true }
-        ).select("status").lean()
-        // console.log(updateStatus)
-        if (!updateStatus) {
-            return next(ERROR(404, "There is no data with an associated ID to update!"));
-        }
-        res.status(201).json(updateStatus);
-    } catch (err) {
-        next(err)
-    }
-}
+    await updateModelStatus(businessProfileModel, id, status, res, next);
+};
 const ImportantAds = async (req, res, next) => {
     const { important } = req.query
     const { id } = req.params
@@ -61,24 +41,16 @@ const ImportantAds = async (req, res, next) => {
         next(err)
     }
 }
-const UpdateAdsStatus = async (req, res, next) => {
-    const { status } = req.query
-    const { id } = req.params
-    if (status === "REJECTED" || status === "PENDING" || status === "APPROVED") {
-        try {
-            const updatedStatus = await AdvertisementModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
-            if (!updatedStatus) {
-                return next(ERROR(404, "There is no data with an associated ID to update!"));
-            }
-            res.status(201).json(updatedStatus);
-        } catch (err) {
-            next(err)
+const updateAdsStatus = async (req, res, next) => {
+    const { status } = req.query;
+    const { id } = req.params;
 
-        }
+    if (status === "REJECTED" || status === "PENDING" || status === "APPROVED") {
+        await updateModelStatus(AdvertisementModel, id, status, res, next);
     } else {
-        return next(ERROR(404, "invalid status!! status can be either REJECTED, PENDING or APPROVED!"));
+        return next(ERROR(404, "Invalid status! Status can be either REJECTED, PENDING, or APPROVED."));
     }
-}
+};
 const UpdateIsActive = async (req, res, next) => {
     const { isActive } = req.query
     const { id } = req.params
@@ -98,32 +70,17 @@ const UpdateIsActive = async (req, res, next) => {
         next(err)
     }
 }
-const UpdateCatgStatus = async (req, res, next) => {
-    const { status } = req.query
-    const { id } = req.params
-    try {
-        const updatedStatus = await categoryModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
-        if (!updatedStatus) {
-            return next(ERROR(404, "There is no data with an associated ID to update!"));
-        }
-        res.status(201).json(updatedStatus);
-    } catch (err) {
-        next(err)
+const updateCatgStatus = async (req, res, next) => {
+    const { status } = req.query;
+    const { id } = req.params;
 
-    }
-}
-const UpdateKeywordStatus = async (req, res, next) => {
-    const { status } = req.query
-    const { id } = req.params
-    try {
-        const updatedStatus = await keywordModel.findByIdAndUpdate(id, { $set: { status } }, { new: true }).select("status").lean()
-        if (!updatedStatus) {
-            return next(ERROR(404, "There is no data with an associated ID to update!"));
-        }
-        res.status(201).json(updatedStatus);
-    } catch (err) {
-        next(err)
+    await updateModelStatus(categoryModel, id, status, res, next);
+};
 
-    }
-}
-module.exports = { UpdateKeywordStatus, UpdateCatgStatus, businessStatus, UpdateAdsStatus, UpdateIsActive, ImportantAds }
+const updateKeywordStatus = async (req, res, next) => {
+    const { status } = req.query;
+    const { id } = req.params;
+
+    await updateModelStatus(keywordModel, id, status, res, next);
+};
+module.exports = { updateKeywordStatus, updateCatgStatus, businessStatus, updateAdsStatus, UpdateIsActive, ImportantAds }

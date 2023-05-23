@@ -105,7 +105,7 @@ const businessProfileSchema = new mongoose.Schema(
       userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
-        require: true,
+        required: true,
       },
       role: {
         type: String,
