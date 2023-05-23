@@ -92,24 +92,24 @@ const updateUser = async (req, res, next) => {
       return next(ERROR(404, "User not found"));
     }
 
-    if (user.email !== email) {
+    if (emil && user.email !== email) {
       user.status = "false";
       user.email = email;
     }
 
-    if (user.firstName !== firstName) {
+    if (firstName && user.firstName !== firstName) {
       user.firstName = firstName;
     }
 
-    if (user.lastName !== lastName) {
+    if (lastName && user.lastName !== lastName) {
       user.lastName = lastName;
     }
 
-    if (user.phone !== phone) {
+    if (phone && user.phone !== phone) {
       user.phone = phone;
     }
 
-    if (user.image !== image) {
+    if (image && user.image !== image) {
       user.image = image;
     }
 
