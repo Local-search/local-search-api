@@ -1,3 +1,4 @@
+const { promises } = require("nodemailer/lib/xoauth2");
 const { getAd } = require("../advertise/advertise.controller");
 const { verifyJwt } = require("../auth/auth.middleware");
 const BusinessProfileModel = require("../models/businessProfile.model");
@@ -13,23 +14,84 @@ const createBusinessProfile = async (req, res, next) => {
     totalReviews,
     businessInfoUpdateAt,
     formFillerInfo,
+    keywords,
+    categorys,
     ...otherData
   } = req.body;
+
   try {
+    const catg = [];
+    const categoryPromises = [];
+
+
+    for (const category of categorys) {
+      if (category.__isNew__) {
+        const { label } = category;
+        const newCategory = new CategoryModel({ label, creator: req.id });
+
+        // Create a promise for saving the new category
+        const categoryPromise = newCategory.save();
+        categoryPromises.push(categoryPromise);
+
+        // Add the promise to the array of category promises
+        categoryPromises.push(categoryPromise);
+
+        // After the category is saved, access the new category ID
+        categoryPromise.then(savedCategory => {
+          const newCategoryId = savedCategory._id;
+
+          // Add the new category ID to the catg array
+          catg.push(newCategoryId);
+        });
+      } else {
+        // Add the value of categories without __isNew__ to the catg array
+        catg.push(category.value);
+      }
+    }
+
+    // Wait for all category creation promises to resolve
+    await Promise.all(categoryPromises);
+
+    const keyWord = []
+    const keywordPromises = []
+
+    for (const keyword of keywords) {
+      if (keyword.__isNew__) {
+        const { label } = keyword;
+        const newKeyword = new KeywordModel({ label, creator: req.id });
+        const keywordPromise = newKeyword.save()
+        keywordPromises.push(keywordPromise)
+        keywordPromises.push(keywordPromise)
+        keywordPromise.then(savedKeyword => {
+          const newKeywordId = savedKeyword._id;
+          keyWord.push(newKeywordId)
+        })
+      } else {
+        keyWord.push(keyword.value)
+      }
+    }
+
+    await Promise.all(keywordPromises)
+
     const businessProfile = new BusinessProfileModel({
       ...otherData,
+      catg: catg.length > 0 ? catg : [],
+      keyWord: keyWord.length > 0 ? keyWord : [],
       formFillerInfo: {
         userId: req.id,
         role: formFillerInfo?.role,
         message: formFillerInfo?.message,
       },
     });
+
     const newBusiness = await businessProfile.save();
-    res.status(201).json({ newBusiness, formData: businessProfile });
+    res.status(201).json({ message: "Business profile created successfully!", newBusiness });
   } catch (err) {
     next(err);
   }
 };
+
+
 const getAllBusinessProfile = async (req, res, next) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 10;

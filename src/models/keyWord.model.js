@@ -14,6 +14,11 @@ const keywordSchema = new mongoose.Schema({
     type: Number,
     default: 5,
   },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Users",
+    // required: true,
+  }
 });
 keywordSchema.index(
   { label: "text" },
