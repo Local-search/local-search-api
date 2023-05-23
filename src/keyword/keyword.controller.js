@@ -12,7 +12,7 @@ exports.createKeyword = async (req, res, next) => {
     if (existingKeyword) {
       return next(ERROR(409, "Keyword already exists"));
     }
-    const keyword = new KeywordModel({ label, status });
+    const keyword = new KeywordModel({ label, status, creator: req.id });
     if (req.role !== "ADMIN") {
       keyword.status = "false"
     }
@@ -101,7 +101,7 @@ exports.deleteKeyword = async (req, res, next) => {
     } else {
       const keyword = await KeywordModel.findOneAndDelete({
         _id: id,
-        user: req.id
+        creator: req.id
       });
       if (!keyword) {
         return next(ERROR(404, "keyword not found"));
