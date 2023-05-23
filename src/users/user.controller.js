@@ -92,7 +92,7 @@ const updateUser = async (req, res, next) => {
       return next(ERROR(404, "User not found"));
     }
 
-    if (emil && user.email !== email) {
+    if (email && user.email !== email) {
       user.status = "false";
       user.email = email;
     }
