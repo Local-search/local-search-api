@@ -22,56 +22,60 @@ const createBusinessProfile = async (req, res, next) => {
   try {
     const catg = [];
     const categoryPromises = [];
+    if (categorys) {
 
+      for (const category of categorys) {
+        if (category.__isNew__) {
+          const { label } = category;
+          const newCategory = new CategoryModel({ label, creator: req.id });
 
-    for (const category of categorys) {
-      if (category.__isNew__) {
-        const { label } = category;
-        const newCategory = new CategoryModel({ label, creator: req.id });
+          // Create a promise for saving the new category
+          const categoryPromise = newCategory.save();
+          categoryPromises.push(categoryPromise);
 
-        // Create a promise for saving the new category
-        const categoryPromise = newCategory.save();
-        categoryPromises.push(categoryPromise);
+          // Add the promise to the array of category promises
+          categoryPromises.push(categoryPromise);
 
-        // Add the promise to the array of category promises
-        categoryPromises.push(categoryPromise);
+          // After the category is saved, access the new category ID
+          categoryPromise.then(savedCategory => {
+            const newCategoryId = savedCategory._id;
 
-        // After the category is saved, access the new category ID
-        categoryPromise.then(savedCategory => {
-          const newCategoryId = savedCategory._id;
-
-          // Add the new category ID to the catg array
-          catg.push(newCategoryId);
-        });
-      } else {
-        // Add the value of categories without __isNew__ to the catg array
-        catg.push(category.value);
+            // Add the new category ID to the catg array
+            catg.push(newCategoryId);
+          });
+        } else {
+          // Add the value of categories without __isNew__ to the catg array
+          catg.push(category.value);
+        }
       }
-    }
 
-    // Wait for all category creation promises to resolve
-    await Promise.all(categoryPromises);
+      // Wait for all category creation promises to resolve
+      await Promise.all(categoryPromises);
+    }
 
     const keyWord = []
     const keywordPromises = []
+    if (keywords) {
 
-    for (const keyword of keywords) {
-      if (keyword.__isNew__) {
-        const { label } = keyword;
-        const newKeyword = new KeywordModel({ label, creator: req.id });
-        const keywordPromise = newKeyword.save()
-        keywordPromises.push(keywordPromise)
-        keywordPromises.push(keywordPromise)
-        keywordPromise.then(savedKeyword => {
-          const newKeywordId = savedKeyword._id;
-          keyWord.push(newKeywordId)
-        })
-      } else {
-        keyWord.push(keyword.value)
+
+      for (const keyword of keywords) {
+        if (keyword.__isNew__) {
+          const { label } = keyword;
+          const newKeyword = new KeywordModel({ label, creator: req.id });
+          const keywordPromise = newKeyword.save()
+          keywordPromises.push(keywordPromise)
+          keywordPromises.push(keywordPromise)
+          keywordPromise.then(savedKeyword => {
+            const newKeywordId = savedKeyword._id;
+            keyWord.push(newKeywordId)
+          })
+        } else {
+          keyWord.push(keyword.value)
+        }
       }
-    }
 
-    await Promise.all(keywordPromises)
+      await Promise.all(keywordPromises)
+    }
 
     const businessProfile = new BusinessProfileModel({
       ...otherData,
