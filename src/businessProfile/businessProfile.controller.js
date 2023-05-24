@@ -7,26 +7,81 @@ const KeywordModel = require("../models/keyWord.model");
 const ERROR = require("../utils/Error");
 
 const createBusinessProfile = async (req, res, next) => {
-  const {
-    status,
-    rating,
-    reviews,
-    totalReviews,
-    businessInfoUpdateAt,
-    formFillerInfo,
-    keywords,
-    categorys,
-    ...otherData
+  const { name, phone, email, address, province, city, ward, tolOrMarga, logo, categorys, keywords, postBox, establishIn, nosite, site, instagram, facebook, twitter, lng, lat, openAllDayAndWeek, openingTime, closingTime, openingDays, services, role, message, TermsAndConditions,
   } = req.body;
+  if (!name) {
+    return next(ERROR(400, "enter you Business name!"))
+  }
+  if (!address) {
+    return next(ERROR(400, "enter you Business address!"))
+  }
+  if (!establishIn) {
+    return next(ERROR(400, "enter the year your business establish In !"))
+  }
+  if (!role) {
+    return next(ERROR(400, "enter the role / position you current have in this business!"))
+  }
+  if (TermsAndConditions !== "agree") {
+    return next(ERROR(405, "sorry if you do not agree with our terms & conditions then we cannot list your business in local search!"))
+  }
+  if (!categorys) {
+    return next(ERROR(400, "choose category related to your business"))
+  }
+  if (!keywords) {
+    return next(ERROR(400, "choose keywords related to your business"))
+  }
+  const isNewCategoriesCount = categorys.filter(category => category.__isNew__).length;
+  if (isNewCategoriesCount > 4) {
+    return next(ERROR(405, "you cannot create more then 4 categorys!"))
+  }
+  const isNewKeywordsCount = keywords.filter(keyword => keyword.__isNew__).length;
+  if (isNewKeywordsCount > 4) {
+    return next(ERROR(405, "you cannot create more then 4 keywords!"))
+  }
+  let data = {
+    name, phone, email, address, logo, postBox, establishIn, TermsAndConditions,
+    formFillerInfo: { role, message, userId: req.id },
+    location: { lat, lng },
+    socailMedia: { insta: instagram, fb: facebook, twitter },
+    province: { name: province, city, ward, tolOrMarga },
+    services,
+  }
 
+  if (nosite) {
+    data.push(site = '')
+  } else if (site) {
+    data.push(nosite = false)
+  }
+
+  if (openAllDayAndWeek) {
+    data.time = {};
+    data.days = []
+  } else if (openingTime && !closingTime) {
+    return next(ERROR(400, "enter closing time"))
+  } else if (closingTime && !openingTime) {
+    return next(ERROR(400, "enter opening time"))
+  } else if (!openAllDayAndWeek) {
+    return next(ERROR(400, "select opening days"))
+  } else if (openingTime && closingTime) {
+    data.openAllDayAndWeek = false;
+    data.time = { from: openingTime, to: closingTime };
+    data.days = [openingDays]
+  }
   try {
     const catg = [];
     const categoryPromises = [];
-    if (categorys) {
+    const uniqueLabels = new Set();
 
+    if (categorys) {
       for (const category of categorys) {
         if (category.__isNew__) {
           const { label } = category;
+          if (uniqueLabels.has(label)) {
+            // Throw an error or handle the duplicate label case
+            return next(ERROR(400, "Duplicate category detected"));
+          }
+    
+          uniqueLabels.add(label);
           const newCategory = new CategoryModel({ label, creator: req.id });
 
           // Create a promise for saving the new category
@@ -56,11 +111,16 @@ const createBusinessProfile = async (req, res, next) => {
     const keyWord = []
     const keywordPromises = []
     if (keywords) {
-
-
       for (const keyword of keywords) {
         if (keyword.__isNew__) {
           const { label } = keyword;
+
+          if (uniqueLabels.has(label)) {
+            return next(ERROR(400, "Duplicate keyword detected"));
+          }
+    
+          uniqueLabels.add(label);
+
           const newKeyword = new KeywordModel({ label, creator: req.id });
           const keywordPromise = newKeyword.save()
           keywordPromises.push(keywordPromise)
@@ -77,16 +137,15 @@ const createBusinessProfile = async (req, res, next) => {
       await Promise.all(keywordPromises)
     }
 
-    const businessProfile = new BusinessProfileModel({
-      ...otherData,
-      catg: catg.length > 0 ? catg : [],
-      keyWord: keyWord.length > 0 ? keyWord : [],
-      formFillerInfo: {
-        userId: req.id,
-        role: formFillerInfo?.role,
-        message: formFillerInfo?.message,
-      },
-    });
+    if (catg) {
+      data.catg = catg
+    }
+    if (keyWord) {
+      data.keyWord = keyWord
+    }
+
+
+    const businessProfile = new BusinessProfileModel(data);
 
     const newBusiness = await businessProfile.save();
     res.status(201).json({ message: "Business profile created successfully!", newBusiness });
