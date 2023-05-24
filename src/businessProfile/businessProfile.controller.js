@@ -67,21 +67,34 @@ const createBusinessProfile = async (req, res, next) => {
     data.time = { from: openingTime, to: closingTime };
     data.days = [openingDays]
   }
+  function hasDuplicateLabels(arr) {
+    const labels = new Set();
+    for (let i = 0; i < arr.length; i++) {
+      const label = arr[i].label;
+      if (labels.has(label)) {
+        return true;
+      }
+      labels.add(label);
+    }
+    return false;
+  }
+  const dublicateCatg = hasDuplicateLabels(categorys)
+  if (dublicateCatg) {
+    return next(ERROR(400, "Duplicate category detected"))
+  }
+  const dublicateKeyword = hasDuplicateLabels(keywords)
+  if (dublicateKeyword) {
+    return next(ERROR(400, "Duplicate keyword detected"))
+  }
   try {
     const catg = [];
     const categoryPromises = [];
-    const uniqueLabels = new Set();
 
     if (categorys) {
       for (const category of categorys) {
         if (category.__isNew__) {
           const { label } = category;
-          if (uniqueLabels.has(label)) {
-            // Throw an error or handle the duplicate label case
-            return next(ERROR(400, "Duplicate category detected"));
-          }
-    
-          uniqueLabels.add(label);
+
           const newCategory = new CategoryModel({ label, creator: req.id });
 
           // Create a promise for saving the new category
@@ -114,12 +127,6 @@ const createBusinessProfile = async (req, res, next) => {
       for (const keyword of keywords) {
         if (keyword.__isNew__) {
           const { label } = keyword;
-
-          if (uniqueLabels.has(label)) {
-            return next(ERROR(400, "Duplicate keyword detected"));
-          }
-    
-          uniqueLabels.add(label);
 
           const newKeyword = new KeywordModel({ label, creator: req.id });
           const keywordPromise = newKeyword.save()
