@@ -60,7 +60,7 @@ const createBusinessProfile = async (req, res, next) => {
     return next(ERROR(400, "enter closing time"))
   } else if (closingTime && !openingTime) {
     return next(ERROR(400, "enter opening time"))
-  } else if (!openAllDayAndWeek) {
+  } else if (!openingDays) {
     return next(ERROR(400, "select opening days"))
   } else if (openingTime && closingTime) {
     data.openAllDayAndWeek = false;
