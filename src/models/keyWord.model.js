@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
+const ERROR = require("../utils/Error");
 
 const keywordSchema = new mongoose.Schema({
   label: {
     type: String,
     required: true,
+    unique: true,
   },
   status: {
     type: String,

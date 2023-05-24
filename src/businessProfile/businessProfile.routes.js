@@ -12,6 +12,7 @@ const {
 } = require("./businessProfile.controller");
 
 const businessProfileRoutes = require("express").Router();
+// businessProfileRoutes.post("/test",  createBusinessProfile);
 businessProfileRoutes.get("/all", verifyJwt, verifyAdmin, getAllBusinessProfile);
 businessProfileRoutes.get("/", getSearchBusinessProfile);
 businessProfileRoutes.get("/trending", TrendingBusiness);
