@@ -66,7 +66,7 @@ const businessProfileSchema = new mongoose.Schema(
     },
     site: {
       type: String,
-      max: 20,
+      max: 50,
     },
     nosite: {
       type: Boolean,

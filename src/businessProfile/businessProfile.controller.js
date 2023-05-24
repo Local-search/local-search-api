@@ -48,14 +48,14 @@ const createBusinessProfile = async (req, res, next) => {
   }
 
   if (nosite) {
-    data.push(site = '')
+    data.nosite = nosite
   } else if (site) {
-    data.push(nosite = false)
+    data.nosite = false
+    data.site = site
   }
 
   if (openAllDayAndWeek) {
-    data.time = {};
-    data.days = []
+    data.openAllDayAndWeek = openAllDayAndWeek;
   } else if (openingTime && !closingTime) {
     return next(ERROR(400, "enter closing time"))
   } else if (closingTime && !openingTime) {
@@ -85,6 +85,13 @@ const createBusinessProfile = async (req, res, next) => {
   const dublicateKeyword = hasDuplicateLabels(keywords)
   if (dublicateKeyword) {
     return next(ERROR(400, "Duplicate keyword detected"))
+  }
+  const categoryLabels = categorys.map(category => category.label);
+  const keywordLabels = keywords.map(keyword => keyword.label);
+  const sameValues = categoryLabels.some(label => keywordLabels.includes(label));
+
+  if (sameValues) {
+    return next(ERROR(400, "Categories and keywords have the same value"));
   }
   try {
     const catg = [];
@@ -127,7 +134,6 @@ const createBusinessProfile = async (req, res, next) => {
       for (const keyword of keywords) {
         if (keyword.__isNew__) {
           const { label } = keyword;
-
           const newKeyword = new KeywordModel({ label, creator: req.id });
           const keywordPromise = newKeyword.save()
           keywordPromises.push(keywordPromise)
@@ -139,10 +145,7 @@ const createBusinessProfile = async (req, res, next) => {
         } else {
           keyWord.push(keyword.value)
         }
-      }
-
-      await Promise.all(keywordPromises)
-    }
+      }await Promise.all(keywordPromises)}
 
     if (catg) {
       data.catg = catg
@@ -150,7 +153,6 @@ const createBusinessProfile = async (req, res, next) => {
     if (keyWord) {
       data.keyWord = keyWord
     }
-
 
     const businessProfile = new BusinessProfileModel(data);
 
