@@ -65,7 +65,7 @@ const createBusinessProfile = async (req, res, next) => {
   } else if (openingTime && closingTime) {
     data.openAllDayAndWeek = false;
     data.time = { from: openingTime, to: closingTime };
-    data.days = [openingDays]
+    data.days = openingDays
   }
   function hasDuplicateLabels(arr) {
     const labels = new Set();
