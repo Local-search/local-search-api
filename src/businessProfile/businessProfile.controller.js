@@ -7,65 +7,111 @@ const KeywordModel = require("../models/keyWord.model");
 const ERROR = require("../utils/Error");
 
 const createBusinessProfile = async (req, res, next) => {
-  const { name, phone, email, address, province, city, ward, tolOrMarga, logo, categorys, keywords, postBox, establishIn, nosite, site, instagram, facebook, twitter, lng, lat, openAllDayAndWeek, openingTime, closingTime, openingDays, services, role, message, TermsAndConditions,
+  const {
+    name,
+    phone,
+    email,
+    address,
+    province,
+    city,
+    ward,
+    tolOrMarga,
+    logo,
+    categorys,
+    keywords,
+    postBox,
+    establishIn,
+    nosite,
+    site,
+    instagram,
+    facebook,
+    twitter,
+    lng,
+    lat,
+    openAllDayAndWeek,
+    openingTime,
+    closingTime,
+    openingDays,
+    services,
+    role,
+    message,
+    TermsAndConditions,
   } = req.body;
   if (!name) {
-    return next(ERROR(400, "enter you Business name!"))
+    return next(ERROR(400, "enter you Business name!"));
   }
   if (!address) {
-    return next(ERROR(400, "enter you Business address!"))
+    return next(ERROR(400, "enter you Business address!"));
   }
   if (!establishIn) {
-    return next(ERROR(400, "enter the year your business establish In !"))
+    return next(ERROR(400, "enter the year your business establish In !"));
   }
   if (!role) {
-    return next(ERROR(400, "enter the role / position you current have in this business!"))
+    return next(
+      ERROR(400, "enter the role / position you current have in this business!")
+    );
   }
   if (TermsAndConditions !== "agree") {
-    return next(ERROR(405, "sorry if you do not agree with our terms & conditions then we cannot list your business in local search!"))
+    return next(
+      ERROR(
+        405,
+        "sorry if you do not agree with our terms & conditions then we cannot list your business in local search!"
+      )
+    );
   }
   if (!categorys) {
-    return next(ERROR(400, "choose category related to your business"))
+    return next(ERROR(400, "choose category related to your business"));
   }
   if (!keywords) {
-    return next(ERROR(400, "choose keywords related to your business"))
+    return next(ERROR(400, "choose keywords related to your business"));
   }
-  const isNewCategoriesCount = categorys.filter(category => category.__isNew__).length;
+  const isNewCategoriesCount = categorys.filter(
+    (category) => category.__isNew__
+  ).length;
   if (isNewCategoriesCount > 4) {
-    return next(ERROR(405, "you cannot create more then 4 categorys!"))
+    return next(ERROR(405, "you cannot create more then 4 categorys!"));
   }
-  const isNewKeywordsCount = keywords.filter(keyword => keyword.__isNew__).length;
+  const isNewKeywordsCount = keywords.filter(
+    (keyword) => keyword.__isNew__
+  ).length;
   if (isNewKeywordsCount > 4) {
-    return next(ERROR(405, "you cannot create more then 4 keywords!"))
+    return next(ERROR(405, "you cannot create more then 4 keywords!"));
   }
   let data = {
-    name, phone, email, address, logo, postBox, establishIn, TermsAndConditions,
+    name,
+    phone,
+    email,
+    address,
+    logo,
+    postBox,
+    establishIn,
+    TermsAndConditions,
     formFillerInfo: { role, message, userId: req.id },
     location: { lat, lng },
     socailMedia: { insta: instagram, fb: facebook, twitter },
     province: { name: province, city, ward, tolOrMarga },
     services,
-  }
+  };
 
   if (nosite) {
-    data.nosite = nosite
+    data.nosite = nosite;
   } else if (site) {
-    data.nosite = false
-    data.site = site
+    data.nosite = false;
+    data.site = site;
   }
 
   if (openAllDayAndWeek) {
     data.openAllDayAndWeek = openAllDayAndWeek;
   } else if (openingTime && !closingTime) {
-    return next(ERROR(400, "enter closing time"))
+    return next(ERROR(400, "enter closing time"));
   } else if (closingTime && !openingTime) {
-    return next(ERROR(400, "enter opening time"))
+    return next(ERROR(400, "enter opening time"));
   } else if (!openingDays) {
-    return next(ERROR(400, "select opening days"))
+    return next(ERROR(400, "select opening days"));
   } else if (openingTime && closingTime) {
     data.openAllDayAndWeek = false;
     data.time = { from: openingTime, to: closingTime };
-    data.days = openingDays
+    data.days = openingDays;
   }
   function hasDuplicateLabels(arr) {
     const labels = new Set();
@@ -78,17 +124,19 @@ const createBusinessProfile = async (req, res, next) => {
     }
     return false;
   }
-  const dublicateCatg = hasDuplicateLabels(categorys)
+  const dublicateCatg = hasDuplicateLabels(categorys);
   if (dublicateCatg) {
-    return next(ERROR(400, "Duplicate category detected"))
+    return next(ERROR(400, "Duplicate category detected"));
   }
-  const dublicateKeyword = hasDuplicateLabels(keywords)
+  const dublicateKeyword = hasDuplicateLabels(keywords);
   if (dublicateKeyword) {
-    return next(ERROR(400, "Duplicate keyword detected"))
+    return next(ERROR(400, "Duplicate keyword detected"));
   }
-  const categoryLabels = categorys.map(category => category.label);
-  const keywordLabels = keywords.map(keyword => keyword.label);
-  const sameValues = categoryLabels.some(label => keywordLabels.includes(label));
+  const categoryLabels = categorys.map((category) => category.label);
+  const keywordLabels = keywords.map((keyword) => keyword.label);
+  const sameValues = categoryLabels.some((label) =>
+    keywordLabels.includes(label)
+  );
 
   if (sameValues) {
     return next(ERROR(400, "Categories and keywords have the same value"));
@@ -112,7 +160,7 @@ const createBusinessProfile = async (req, res, next) => {
           categoryPromises.push(categoryPromise);
 
           // After the category is saved, access the new category ID
-          categoryPromise.then(savedCategory => {
+          categoryPromise.then((savedCategory) => {
             const newCategoryId = savedCategory._id;
 
             // Add the new category ID to the catg array
@@ -128,60 +176,145 @@ const createBusinessProfile = async (req, res, next) => {
       await Promise.all(categoryPromises);
     }
 
-    const keyWord = []
-    const keywordPromises = []
+    const keyWord = [];
+    const keywordPromises = [];
     if (keywords) {
       for (const keyword of keywords) {
         if (keyword.__isNew__) {
           const { label } = keyword;
           const newKeyword = new KeywordModel({ label, creator: req.id });
-          const keywordPromise = newKeyword.save()
-          keywordPromises.push(keywordPromise)
-          keywordPromises.push(keywordPromise)
-          keywordPromise.then(savedKeyword => {
+          const keywordPromise = newKeyword.save();
+          keywordPromises.push(keywordPromise);
+          keywordPromises.push(keywordPromise);
+          keywordPromise.then((savedKeyword) => {
             const newKeywordId = savedKeyword._id;
-            keyWord.push(newKeywordId)
-          })
+            keyWord.push(newKeywordId);
+          });
         } else {
-          keyWord.push(keyword.value)
+          keyWord.push(keyword.value);
         }
-      }await Promise.all(keywordPromises)}
+      }
+      await Promise.all(keywordPromises);
+    }
 
     if (catg) {
-      data.catg = catg
+      data.catg = catg;
     }
     if (keyWord) {
-      data.keyWord = keyWord
+      data.keyWord = keyWord;
     }
 
     const businessProfile = new BusinessProfileModel(data);
 
     const newBusiness = await businessProfile.save();
-    res.status(201).json({ message: "Business profile created successfully!", newBusiness });
+    res
+      .status(201)
+      .json({ message: "Business profile created successfully!", newBusiness });
   } catch (err) {
     next(err);
   }
 };
 
-
 const getAllBusinessProfile = async (req, res, next) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 10;
-  // console.log('1', limit)
+  let {
+    short,
+    status,
+    province,
+    city,
+    ward,
+    tolOrMarga,
+    name,
+    phone,
+    email,
+    site,
+    nosite,
+    popular,
+    reviews,
+    establishIn,
+  } = req.query;
+  if (isNaN(page)) return next(ERROR(400, "Invalid page value"));
+  if (isNaN(limit)) return next(ERROR(400, "Invalid limit value"));
 
-  if (isNaN(page) || isNaN(limit)) {
-    return next(ERROR(400, "Invalid page or limit value"));
+  let shortParams = {};
+  let query = {
+    $or: [],
+    $and: [],
+  };
+  if (short) {
+    if (short === "asc") {
+      shortParams._id = 1;
+    } else if (short === "desc") {
+      shortParams._id = -1;
+    }
   }
+  if (establishIn) {
+    if (establishIn === "latest") {
+      shortParams.establishIn = 1;
+    } else if (establishIn === "oldest") {
+      shortParams.establishIn = -1;
+    }
+  }
+  if (popular) {
+    shortParams.popular = -1;
+  }
+  if (reviews) {
+    shortParams.totalReviews = -1;
+  }
+  if (status) {
+    if (status === "true" || status === true) {
+      query.$and.push({ status: "true" });
+    } else if (status === "false" || status === false) {
+      query.$and.push({ status: "false" });
+    }
+  }
+  if (province) {
+    query.$and.push({ province: { name: province } });
+  }
+  if (city) {
+    query.$and.push({ province: { city } });
+  }
+  if (ward) {
+    query.$and.push({ province: { ward } });
+  }
+  if (tolOrMarga) {
+    query.$and.push({ province: { tolOrMarga } });
+  }
+  if (name) {
+    query.$and.push({ $text: { $search: name } }, { name });
+  }
+  if (email) {
+    query.$and.push({ $text: { $search: email } }, { email });
+  }
+  if (phone) {
+    query.$and.push({ $text: { $search: phone } }, { phone });
+  }
+  if (site) {
+    query.$and.push({ $text: { $search: site } }, { site });
+  }
+  if (nosite) {
+    if (status === "true" || status === true) {
+      query.$and.push({ nosite: true });
+    } else if (status === "false" || status === false) {
+      query.$and.push({ nosite: false });
+    }
+  }
+
   try {
-    const count = await BusinessProfileModel.countDocuments();
+    const count = await BusinessProfileModel.countDocuments(query);
     const totalPages = Math.ceil(count / limit);
-    const allProfiles = await BusinessProfileModel.find().skip((page - 1) * limit)
+    const allProfiles = await BusinessProfileModel.find(query)
+      .skip((page - 1) * limit)
       .limit(limit)
-    res.status(200).json({ result: allProfiles, count, totalPages, page, limit })
+      .short(shortParams);
+    res
+      .status(200)
+      .json({ result: allProfiles, count, totalPages, page, limit });
   } catch (err) {
-    next(err)
+    next(err);
   }
-}
+};
 const searchBusiness = async (
   query,
   ids,
@@ -257,7 +390,6 @@ const searchBusiness = async (
     next(err);
   }
 };
-
 
 const getSearchBusinessProfile = async (req, res, next) => {
   const { search } = req.query;
@@ -458,7 +590,7 @@ const deleteBusinessProfileById = async (req, res, next) => {
       if (!businessProfile) {
         return next(ERROR(401, "Business profile not found"));
       }
-      res.status(200).json({ message: "Business profile deleted!", });
+      res.status(200).json({ message: "Business profile deleted!" });
     } else {
       const businessProfile = await BusinessProfileModel.findOneAndDelete({
         _id: id,
@@ -467,7 +599,7 @@ const deleteBusinessProfileById = async (req, res, next) => {
       if (!businessProfile) {
         return next(ERROR(401, "Business profile not found"));
       }
-      res.status(200).json({ message: "Business profile deleted!", });
+      res.status(200).json({ message: "Business profile deleted!" });
     }
   } catch (err) {
     next(err);
@@ -492,5 +624,5 @@ module.exports = {
   TrendingBusiness,
   getBusinessWithKeywordId,
   getBusinessWithCatgId,
-  getSearchBusinessProfile
+  getSearchBusinessProfile,
 };
