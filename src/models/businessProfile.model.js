@@ -10,7 +10,7 @@ const businessProfileSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      max: 25
+      max: 25,
     },
     phone: {
       type: String,
@@ -22,7 +22,7 @@ const businessProfileSchema = new mongoose.Schema(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         "inValid Email address",
       ],
-      max: 40
+      max: 40,
     },
     address: {
       type: String,
@@ -97,7 +97,7 @@ const businessProfileSchema = new mongoose.Schema(
     ],
     services: {
       type: String,
-      max: 100
+      max: 100,
     },
     formFillerInfo: {
       userId: {
@@ -119,7 +119,10 @@ const businessProfileSchema = new mongoose.Schema(
     TermsAndConditions: {
       type: String,
       enum: ["agree", "disagree"],
-      required: [true, "You should confirm that you agree to our Terms and Conditions.",]
+      required: [
+        true,
+        "You should confirm that you agree to our Terms and Conditions.",
+      ],
     },
     reviews: [
       {
@@ -192,14 +195,12 @@ businessProfileSchema.index(
   { partialFilterExpression: { status: true } },
   { background: true }
 );
-businessProfileSchema.index(
-  { popular: -1 },
-)
+businessProfileSchema.index({ popular: -1 });
 businessProfileSchema.index(
   { status: 1 },
   { partialFilterExpression: { status: false } }
 );
-
+businessProfileSchema.index({ establishIn: -1 });
 const BusinessProfileModel = mongoose.model(
   "BusinessProfile",
   businessProfileSchema
