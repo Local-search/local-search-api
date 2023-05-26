@@ -233,6 +233,7 @@ const getAllBusinessProfile = async (req, res, next) => {
     popular,
     reviews,
     establishIn,
+    search,
     filterData
   } = req.query;
   if (isNaN(page)) return next(ERROR(400, "Invalid page value"));
@@ -240,32 +241,32 @@ const getAllBusinessProfile = async (req, res, next) => {
 
   ///////////// ----------------- /////////////
 
-  let sortParams = {};
+  let sortOptions = {};
 
   if (sort === "asc") {
-    sortParams._id = 1;
+    sortOptions._id = 1;
   } else {
-    sortParams._id = -1;
+    sortOptions._id = -1;
   }
 
   // ----------------- //
 
   if (establishIn === "latest") {
-    sortParams.establishIn = 1;
+    sortOptions.establishIn = 1;
   } else if (establishIn === "oldest") {
-    sortParams.establishIn = -1;
+    sortOptions.establishIn = -1;
   }
 
   // ----------------- //
 
   if (popular) {
-    sortParams.popular = -1;
+    sortOptions.popular = -1;
   }
 
   //------------------//
 
   if (reviews) {
-    sortParams.totalReviews = -1;
+    sortOptions.totalReviews = -1;
   }
 
   ///////////// ----------------- /////////////
@@ -281,21 +282,22 @@ const getAllBusinessProfile = async (req, res, next) => {
 
   // ----------------- //
   if (province) {
-    query.$and.push({ "province.name": province });
+    query["province.name"] = province;
   }
   if (city) {
-    query.$and.push({ "province.city": city });
+    query["province.city"] = city;
   }
   if (ward) {
-    query.$and.push({ "province.ward": ward });
+    query["province.ward"] = ward;
   }
   if (tolOrMarga) {
-    query.$and.push({ "province.tolOrMarga": tolOrMarga });
+    query["province.tolOrMarga"] = tolOrMarga;
   }
 
   // ----------------- //
 
-  if (name) query.$text = { $search: name };
+  if (search) query.$text = { $search: `${search}` };
+  if (name) query.name = name
   if (email) query.email = email;
   if (phone) query.phone = phone;
   if (site) query.site = site;
@@ -310,13 +312,13 @@ const getAllBusinessProfile = async (req, res, next) => {
 
   ///////////// ----------------- /////////////
 
-  const findQuery = filterData ? BusinessProfileModel.find(query).sort(sortOptions) : BusinessProfileModel.find();
+  const findQuery = filterData ? BusinessProfileModel.find(query) : BusinessProfileModel.find();
   const countQuery = filterData ? BusinessProfileModel.countDocuments(query) : BusinessProfileModel.countDocuments();
 
   try {
     const count = await countQuery;
     const totalPages = Math.ceil(count / limit);
-    const allProfiles = await findQuery.skip((page - 1) * limit).limit(limit);
+    const allProfiles = await findQuery.sort(sortOptions).skip((page - 1) * limit).limit(limit);
     res.status(200).json({ result: allProfiles, count, totalPages, page, limit });
   } catch (err) {
     next(err)
@@ -355,13 +357,13 @@ const searchBusiness = async (
     if (page > totalPages) {
       page = 1;
     }
-    const sortParams = {
+    const sortOptions = {
       rating: -1,
       totalReviews: -1,
       popular: -1,
     };
     if (search) {
-      sortParams.score = { $meta: "textScore" };
+      sortOptions.score = { $meta: "textScore" };
     }
     const businessProfiles = await BusinessProfileModel.find(query)
       .populate({
@@ -372,7 +374,7 @@ const searchBusiness = async (
         path: "keyWord",
         select: "label",
       })
-      .sort(sortParams)
+      .sort(sortOptions)
       .skip((page - 1) * limit)
       .limit(limit)
       .select(
