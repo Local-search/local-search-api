@@ -233,10 +233,12 @@ const getAllBusinessProfile = async (req, res, next) => {
     popular,
     reviews,
     establishIn,
-    filterData // true or false
+    filterData
   } = req.query;
   if (isNaN(page)) return next(ERROR(400, "Invalid page value"));
   if (isNaN(limit)) return next(ERROR(400, "Invalid limit value"));
+
+  ///////////// ----------------- /////////////
 
   let sortParams = {};
 
@@ -245,81 +247,79 @@ const getAllBusinessProfile = async (req, res, next) => {
   } else {
     sortParams._id = -1;
   }
-  let query = {
-    $and: [],
-  };
+
+  // ----------------- //
+
   if (establishIn === "latest") {
     sortParams.establishIn = 1;
   } else if (establishIn === "oldest") {
     sortParams.establishIn = -1;
   }
+
+  // ----------------- //
+
   if (popular) {
     sortParams.popular = -1;
   }
+
+  //------------------//
+
   if (reviews) {
     sortParams.totalReviews = -1;
   }
+
+  ///////////// ----------------- /////////////
+
+  let query = {
+  };
+
   if (status === "true" || status === true) {
     query.$and.push({ status: "true" });
   } else if (status === "false" || status === false) {
     query.$and.push({ status: "false" });
   }
+
+  // ----------------- //
   if (province) {
-    query.$and.push({ province: { name: province } });
+    query.$and.push({ "province.name": province });
   }
   if (city) {
-    query.$and.push({ province: { city: city } });
+    query.$and.push({ "province.city": city });
   }
   if (ward) {
-    query.$and.push({ province: { ward: ward } });
+    query.$and.push({ "province.ward": ward });
   }
   if (tolOrMarga) {
-    query.$and.push({ province: { tolOrMarga: tolOrMarga } });
+    query.$and.push({ "province.tolOrMarga": tolOrMarga });
   }
-  if (name) {
-    query.$and.push({ $text: { $search: name } }, { name: name });
-  }
-  if (email) {
-    query.$and.push({ $text: { $search: email } }, { email: email });
-  }
-  if (phone) {
-    query.$and.push({ $text: { $search: phone } }, { phone: phone });
-  }
-  if (site) {
-    query.$and.push({ $text: { $search: site } }, { site: site });
-  }
+
+  // ----------------- //
+
+  if (name) query.$text = { $search: name };
+  if (email) query.email = email;
+  if (phone) query.phone = phone;
+  if (site) query.site = site;
+
+  // ----------------- //
+
   if (nosite === "true" || nosite === true) {
     query.$and.push({ nosite: true });
   } else if (nosite === "false" || nosite === false) {
     query.$and.push({ nosite: false });
   }
-  if (filterData) {
-    try {
-      const count = await BusinessProfileModel.countDocuments(query);
-      const totalPages = Math.ceil(count / limit);
-      const allProfiles = await BusinessProfileModel.find(query)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort(sortParams);
-      res
-        .status(200)
-        .json({ result: allProfiles, count, totalPages, page, limit });
-    } catch (err) {
-      next(err);
-    }
-  } else {
-    try {
-      const count = await BusinessProfileModel.countDocuments();
-      const totalPages = Math.ceil(count / limit);
-      const allProfiles = await BusinessProfileModel.find()
-        .skip((page - 1) * limit)
-        .limit(limit)
-      res
-        .status(200)
-        .json({ result: allProfiles, count, totalPages, page, limit });
-    } catch (err) {
-      next(err);
-    }
+
+  ///////////// ----------------- /////////////
+
+  const findQuery = filterData ? BusinessProfileModel.find(query).sort(sortOptions) : BusinessProfileModel.find();
+  const countQuery = filterData ? BusinessProfileModel.countDocuments(query) : BusinessProfileModel.countDocuments();
+
+  try {
+    const count = await countQuery;
+    const totalPages = Math.ceil(count / limit);
+    const allProfiles = await findQuery.skip((page - 1) * limit).limit(limit);
+    res.status(200).json({ result: allProfiles, count, totalPages, page, limit });
+  } catch (err) {
+    next(err)
   }
 
 };
