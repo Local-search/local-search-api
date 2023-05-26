@@ -242,7 +242,7 @@ const getAllBusinessProfile = async (req, res, next) => {
 
   if (sort === "asc") {
     sortParams._id = 1;
-  } else if (sort === "desc") {
+  } else {
     sortParams._id = -1;
   }
   let query = {
@@ -259,12 +259,10 @@ const getAllBusinessProfile = async (req, res, next) => {
   if (reviews) {
     sortParams.totalReviews = -1;
   }
-  if (status) {
-    if (status === "true" || status === true) {
-      query.$and.push({ status: "true" });
-    } else if (status === "false" || status === false) {
-      query.$and.push({ status: "false" });
-    }
+  if (status === "true" || status === true) {
+    query.$and.push({ status: "true" });
+  } else if (status === "false" || status === false) {
+    query.$and.push({ status: "false" });
   }
   if (province) {
     query.$and.push({ province: { name: province } });
@@ -290,46 +288,16 @@ const getAllBusinessProfile = async (req, res, next) => {
   if (site) {
     query.$and.push({ $text: { $search: site } }, { site: site });
   }
-  if (nosite) {
-    if (nosite === "true" || nosite === true) {
-      query.$and.push({ nosite: true });
-    } else if (nosite === "false" || nosite === false) {
-      query.$and.push({ nosite: false });
-    }
+  if (nosite === "true" || nosite === true) {
+    query.$and.push({ nosite: true });
+  } else if (nosite === "false" || nosite === false) {
+    query.$and.push({ nosite: false });
   }
-  if (filterData && sort !== "all") {
+  if (filterData) {
     try {
       const count = await BusinessProfileModel.countDocuments(query);
       const totalPages = Math.ceil(count / limit);
       const allProfiles = await BusinessProfileModel.find(query)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort(sortParams);
-      res
-        .status(200)
-        .json({ result: allProfiles, count, totalPages, page, limit });
-    } catch (err) {
-      next(err);
-    }
-  }
-  else if (filterData) {
-    try {
-      const count = await BusinessProfileModel.countDocuments(query);
-      const totalPages = Math.ceil(count / limit);
-      const allProfiles = await BusinessProfileModel.find(query)
-        .skip((page - 1) * limit)
-        .limit(limit)
-      res
-        .status(200)
-        .json({ result: allProfiles, count, totalPages, page, limit });
-    } catch (err) {
-      next(err);
-    }
-  } else if (sort !== "all") {
-    try {
-      const count = await BusinessProfileModel.countDocuments();
-      const totalPages = Math.ceil(count / limit);
-      const allProfiles = await BusinessProfileModel.find()
         .skip((page - 1) * limit)
         .limit(limit)
         .sort(sortParams);
@@ -340,7 +308,6 @@ const getAllBusinessProfile = async (req, res, next) => {
       next(err);
     }
   } else {
-
     try {
       const count = await BusinessProfileModel.countDocuments();
       const totalPages = Math.ceil(count / limit);
