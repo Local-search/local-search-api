@@ -270,30 +270,30 @@ const getAllBusinessProfile = async (req, res, next) => {
     query.$and.push({ province: { name: province } });
   }
   if (city) {
-    query.$and.push({ province: { city } });
+    query.$and.push({ province: { city: city } });
   }
   if (ward) {
-    query.$and.push({ province: { ward } });
+    query.$and.push({ province: { ward: ward } });
   }
   if (tolOrMarga) {
-    query.$and.push({ province: { tolOrMarga } });
+    query.$and.push({ province: { tolOrMarga: tolOrMarga } });
   }
   if (name) {
-    query.$and.push({ $text: { $search: name } }, { name });
+    query.$and.push({ $text: { $search: name } }, { name: name });
   }
   if (email) {
-    query.$and.push({ $text: { $search: email } }, { email });
+    query.$and.push({ $text: { $search: email } }, { email: email });
   }
   if (phone) {
-    query.$and.push({ $text: { $search: phone } }, { phone });
+    query.$and.push({ $text: { $search: phone } }, { phone: phone });
   }
   if (site) {
-    query.$and.push({ $text: { $search: site } }, { site });
+    query.$and.push({ $text: { $search: site } }, { site: site });
   }
   if (nosite) {
-    if (status === "true" || status === true) {
+    if (nosite === "true" || nosite === true) {
       query.$and.push({ nosite: true });
-    } else if (status === "false" || status === false) {
+    } else if (nosite === "false" || nosite === false) {
       query.$and.push({ nosite: false });
     }
   }
