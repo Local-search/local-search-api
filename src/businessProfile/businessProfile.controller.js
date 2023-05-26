@@ -275,9 +275,9 @@ const getAllBusinessProfile = async (req, res, next) => {
   };
 
   if (status === "true" || status === true) {
-    query.$and.push({ status: "true" });
+    query.status = "true";
   } else if (status === "false" || status === false) {
-    query.$and.push({ status: "false" });
+    query.status = "false";
   }
 
   // ----------------- //
@@ -305,9 +305,9 @@ const getAllBusinessProfile = async (req, res, next) => {
   // ----------------- //
 
   if (nosite === "true" || nosite === true) {
-    query.$and.push({ nosite: true });
+    query.nosite = true;
   } else if (nosite === "false" || nosite === false) {
-    query.$and.push({ nosite: false });
+    query.nosite = false;
   }
 
   ///////////// ----------------- /////////////
