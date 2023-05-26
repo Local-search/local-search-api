@@ -238,66 +238,70 @@ const getAllBusinessProfile = async (req, res, next) => {
   if (isNaN(limit)) return next(ERROR(400, "Invalid limit value"));
 
   let shortParams = {};
-  let query = {
-    $or: [],
-    $and: [],
-  };
-  if (short) {
-    if (short === "asc") {
-      shortParams._id = 1;
-    } else if (short === "desc") {
-      shortParams._id = -1;
+  let query
+  if (filterData) {
+
+   query = {
+      $or: [],
+      $and: [],
+    };
+    if (short) {
+      if (short === "asc") {
+        shortParams._id = 1;
+      } else if (short === "desc") {
+        shortParams._id = -1;
+      }
     }
-  }
-  if (establishIn) {
-    if (establishIn === "latest") {
-      shortParams.establishIn = 1;
-    } else if (establishIn === "oldest") {
-      shortParams.establishIn = -1;
+    if (establishIn) {
+      if (establishIn === "latest") {
+        shortParams.establishIn = 1;
+      } else if (establishIn === "oldest") {
+        shortParams.establishIn = -1;
+      }
     }
-  }
-  if (popular) {
-    shortParams.popular = -1;
-  }
-  if (reviews) {
-    shortParams.totalReviews = -1;
-  }
-  if (status) {
-    if (status === "true" || status === true) {
-      query.$and.push({ status: "true" });
-    } else if (status === "false" || status === false) {
-      query.$and.push({ status: "false" });
+    if (popular) {
+      shortParams.popular = -1;
     }
-  }
-  if (province) {
-    query.$and.push({ province: { name: province } });
-  }
-  if (city) {
-    query.$and.push({ province: { city } });
-  }
-  if (ward) {
-    query.$and.push({ province: { ward } });
-  }
-  if (tolOrMarga) {
-    query.$and.push({ province: { tolOrMarga } });
-  }
-  if (name) {
-    query.$and.push({ $text: { $search: name } }, { name });
-  }
-  if (email) {
-    query.$and.push({ $text: { $search: email } }, { email });
-  }
-  if (phone) {
-    query.$and.push({ $text: { $search: phone } }, { phone });
-  }
-  if (site) {
-    query.$and.push({ $text: { $search: site } }, { site });
-  }
-  if (nosite) {
-    if (status === "true" || status === true) {
-      query.$and.push({ nosite: true });
-    } else if (status === "false" || status === false) {
-      query.$and.push({ nosite: false });
+    if (reviews) {
+      shortParams.totalReviews = -1;
+    }
+    if (status) {
+      if (status === "true" || status === true) {
+        query.$and.push({ status: "true" });
+      } else if (status === "false" || status === false) {
+        query.$and.push({ status: "false" });
+      }
+    }
+    if (province) {
+      query.$and.push({ province: { name: province } });
+    }
+    if (city) {
+      query.$and.push({ province: { city } });
+    }
+    if (ward) {
+      query.$and.push({ province: { ward } });
+    }
+    if (tolOrMarga) {
+      query.$and.push({ province: { tolOrMarga } });
+    }
+    if (name) {
+      query.$and.push({ $text: { $search: name } }, { name });
+    }
+    if (email) {
+      query.$and.push({ $text: { $search: email } }, { email });
+    }
+    if (phone) {
+      query.$and.push({ $text: { $search: phone } }, { phone });
+    }
+    if (site) {
+      query.$and.push({ $text: { $search: site } }, { site });
+    }
+    if (nosite) {
+      if (status === "true" || status === true) {
+        query.$and.push({ nosite: true });
+      } else if (status === "false" || status === false) {
+        query.$and.push({ nosite: false });
+      }
     }
   }
 
