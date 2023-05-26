@@ -86,6 +86,6 @@ const updateKeywordStatus = async (req, res, next) => {
 const updateUserStatus = async (req, res, next)=>{
     const { status } = req.query;
     const { id } = req.params;
-    await updateModelStatus(User, id, status, req, next)
+    await updateModelStatus(User, id, status, res, next)
 }
 module.exports = { updateUserStatus, updateKeywordStatus, updateCatgStatus, businessStatus, updateAdsStatus, UpdateIsActive, ImportantAds }
