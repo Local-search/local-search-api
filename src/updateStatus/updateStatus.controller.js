@@ -3,7 +3,7 @@ const keywordModel = require("../models/keyWord.model");
 const businessProfileModel = require("../models/businessProfile.model");
 const AdvertisementModel = require("../models/advertisement.model");
 const ERROR = require("../utils/Error")
-
+const User = require("../models/user.model")
 const updateModelStatus = async (Model, id, updateField, res, next) => {
     try {
         const updatedStatus = await Model.findByIdAndUpdate(
@@ -83,4 +83,9 @@ const updateKeywordStatus = async (req, res, next) => {
 
     await updateModelStatus(keywordModel, id, status, res, next);
 };
-module.exports = { updateKeywordStatus, updateCatgStatus, businessStatus, updateAdsStatus, UpdateIsActive, ImportantAds }
+const updateUserStatus = async (req, res, next)=>{
+    const { status } = req.query;
+    const { id } = req.params;
+    await updateModelStatus(User, id, status, req, next)
+}
+module.exports = { updateUserStatus, updateKeywordStatus, updateCatgStatus, businessStatus, updateAdsStatus, UpdateIsActive, ImportantAds }

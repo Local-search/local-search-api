@@ -133,6 +133,7 @@ const getAd = async (
   }
 };
 
+
 const updateAd = async (req, res, next) => {
   const { id, role } = req;
   const updates = Object.keys(req.body);
@@ -155,7 +156,10 @@ const updateAd = async (req, res, next) => {
   }
 
   try {
-    const advertisement = await AdvertisementModel.findById(req.params.id);
+    const advertisement = await AdvertisementModel.findOneAndUpdate({
+      _id: req.params.id,
+      advertiser: req.id,
+    });
     if (!advertisement) {
       return next(ERROR(404, "Ad not found"));
     }
@@ -167,7 +171,10 @@ const updateAd = async (req, res, next) => {
       return next(ERROR(401, "Unauthorized"));
     }
     if (role === "ADMIN") {
-      advertisement.status = req.body.status;
+      const status = req.body.status
+      if (status) {
+        advertisement.status = status;
+      }
     } else {
       advertisement.status = "pending";
     }
