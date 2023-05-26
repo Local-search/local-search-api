@@ -233,6 +233,7 @@ const getAllBusinessProfile = async (req, res, next) => {
     popular,
     reviews,
     establishIn,
+    filterData
   } = req.query;
   if (isNaN(page)) return next(ERROR(400, "Invalid page value"));
   if (isNaN(limit)) return next(ERROR(400, "Invalid limit value"));
@@ -240,7 +241,6 @@ const getAllBusinessProfile = async (req, res, next) => {
   let shortParams = {};
   let query
   if (filterData) {
-
    query = {
       $or: [],
       $and: [],
